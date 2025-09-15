@@ -1,6 +1,6 @@
 // routes/fileRoutes.js
 import express from 'express';
-import { uploadFile, listFiles } from '../controllers/fileController.js';
+import { uploadFile, listFiles, downloadFile, deleteFile } from '../controllers/fileController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { roleMiddleware } from '../middlewares/roleMiddleware.js';
 import { upload } from '../utils/upload.js';
@@ -12,5 +12,9 @@ router.post('/', authMiddleware, roleMiddleware(['professional']), upload.single
 
 // listar arquivos de um paciente
 router.get('/:patientId', authMiddleware, roleMiddleware(['admin', 'professional']), listFiles);
+
+router.get('/:id/download', authMiddleware, downloadFile);
+
+router.delete('/:id', authMiddleware, deleteFile);
 
 export default router;
