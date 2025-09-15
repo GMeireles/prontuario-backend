@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js'
 import patientRoutes from './routes/patientRoutes.js'
 import recordRoutes from './routes/recordRoutes.js'
 import appointmentRoutes from './routes/appointmentRoutes.js'
+import anamneseRoutes from './routes/anamneseRoutes.js';
 
 // Middlewares globais
 import { errorHandler } from './middlewares/errorHandler.js'
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/patients', patientRoutes)
 app.use('/api/records', recordRoutes)
 app.use('/api/appointments', appointmentRoutes)
+app.use('/api/anamneses', anamneseRoutes);
 
 // Rotas inexistentes
 app.use(notFoundHandler)
