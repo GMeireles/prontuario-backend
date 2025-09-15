@@ -18,12 +18,12 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       professional_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: { model: 'users', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      },
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: { model: 'users', key: 'id' },
+            onDelete: 'CASCADE',   // se o profissional for apagado, apaga as consultas
+            onUpdate: 'CASCADE'
+          },
       type: {
         type: Sequelize.ENUM('medication', 'conduct', 'referral'),
         allowNull: false

@@ -1,17 +1,22 @@
-// models/Evolution.js
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
-import Patient from './Patient.js';
-import User from './User.js';
+'use strict';
+import { Model } from 'sequelize';
 
-const Evolution = sequelize.define('Evolution', {
-  note: { type: DataTypes.TEXT, allowNull: false }
-}, {
-  tableName: 'evolutions',
-  timestamps: true
-});
+export default (sequelize, DataTypes) => {
+  class Evolution extends Model {
+    static associate(models) {
+      Evolution.belongsTo(models.Patient, { foreignKey: 'patient_id', as: 'patient' });
+      Evolution.belongsTo(models.User, { foreignKey: 'professional_id', as: 'professional' });
+    }
+  }
 
-Evolution.belongsTo(Patient, { foreignKey: 'patient_id', as: 'patient' });
-Evolution.belongsTo(User, { foreignKey: 'professional_id', as: 'professional' });
+  Evolution.init({
+    note: { type: DataTypes.TEXT, allowNull: false }
+  }, {
+    sequelize,
+    modelName: 'Evolution',
+    tableName: 'evolutions',
+    underscored: true
+  });
 
-export default Evolution;
+  return Evolution;
+};

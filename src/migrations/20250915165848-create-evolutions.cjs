@@ -1,9 +1,9 @@
-// migrations/20250915120000-create-anamneses.js
+// migrations/20250915123000-create-evolutions.js
 'use strict';
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('anamneses', {
+    await queryInterface.createTable('evolutions', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -18,27 +18,15 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       professional_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: { model: 'users', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      },
-      main_complaint: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: { model: 'users', key: 'id' },
+            onDelete: 'CASCADE',   // se o profissional for apagado, apaga as consultas
+            onUpdate: 'CASCADE'
+          },
+      note: {
         type: Sequelize.TEXT,
         allowNull: false
-      },
-      medical_history: {
-        type: Sequelize.TEXT
-      },
-      family_history: {
-        type: Sequelize.TEXT
-      },
-      lifestyle: {
-        type: Sequelize.TEXT
-      },
-      allergies: {
-        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
@@ -54,6 +42,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('anamneses');
+    await queryInterface.dropTable('evolutions');
   }
 };

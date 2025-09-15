@@ -1,21 +1,26 @@
-// models/Anamnese.js
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
-import Patient from './Patient.js';
-import User from './User.js';
+'use strict';
+import { Model } from 'sequelize';
 
-const Anamnese = sequelize.define('Anamnese', {
-  main_complaint: { type: DataTypes.TEXT, allowNull: false },
-  medical_history: { type: DataTypes.TEXT },
-  family_history: { type: DataTypes.TEXT },
-  lifestyle: { type: DataTypes.TEXT },
-  allergies: { type: DataTypes.TEXT }
-}, {
-  tableName: 'anamneses',
-  timestamps: true
-});
+export default (sequelize, DataTypes) => {
+  class Anamnese extends Model {
+    static associate(models) {
+      Anamnese.belongsTo(models.Patient, { foreignKey: 'patient_id', as: 'patient' });
+      Anamnese.belongsTo(models.User, { foreignKey: 'professional_id', as: 'professional' });
+    }
+  }
 
-Anamnese.belongsTo(Patient, { foreignKey: 'patient_id', as: 'patient' });
-Anamnese.belongsTo(User, { foreignKey: 'professional_id', as: 'professional' });
+  Anamnese.init({
+    main_complaint: { type: DataTypes.TEXT, allowNull: false },
+    medical_history: DataTypes.TEXT,
+    family_history: DataTypes.TEXT,
+    lifestyle: DataTypes.TEXT,
+    allergies: DataTypes.TEXT
+  }, {
+    sequelize,
+    modelName: 'Anamnese',
+    tableName: 'anamneses',
+    underscored: true
+  });
 
-export default Anamnese;
+  return Anamnese;
+};

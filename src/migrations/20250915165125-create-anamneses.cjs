@@ -1,9 +1,8 @@
-// migrations/20250915123000-create-evolutions.js
 'use strict';
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('evolutions', {
+    await queryInterface.createTable('anamneses', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -22,26 +21,38 @@ module.exports = {
         allowNull: false,
         references: { model: 'users', key: 'id' },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onDelete: 'CASCADE' // ← ajustado para não dar conflito
       },
-      note: {
+      main_complaint: {
         type: Sequelize.TEXT,
         allowNull: false
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW')
+      medical_history: {
+        type: Sequelize.TEXT
       },
-      updatedAt: {
+      family_history: {
+        type: Sequelize.TEXT
+      },
+      lifestyle: {
+        type: Sequelize.TEXT
+      },
+      allergies: {
+        type: Sequelize.TEXT
+      },
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW')
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('evolutions');
+    await queryInterface.dropTable('anamneses');
   }
 };

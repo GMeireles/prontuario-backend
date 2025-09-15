@@ -11,7 +11,15 @@ export async function up(queryInterface, Sequelize) {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: { model: 'patients', key: 'id' },
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    },
+    professional_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: { model: 'users', key: 'id' },
+      onDelete: 'CASCADE',   // se o profissional for apagado, apaga as consultas
+      onUpdate: 'CASCADE'
     },
     tenant_id: {
       type: Sequelize.INTEGER,
@@ -21,7 +29,15 @@ export async function up(queryInterface, Sequelize) {
       type: Sequelize.DATE,
       allowNull: false
     },
+    status: {
+      type: Sequelize.ENUM('scheduled', 'confirmed', 'cancelled', 'completed'),
+      allowNull: false,
+      defaultValue: 'scheduled'
+    },
     notes: {
+      type: Sequelize.TEXT
+    },
+    cancellation_reason: {
       type: Sequelize.TEXT
     },
     created_at: {
@@ -39,4 +55,5 @@ export async function up(queryInterface, Sequelize) {
 
 export async function down(queryInterface, Sequelize) {
   await queryInterface.dropTable('appointments');
+  await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_appointments_status";');
 }

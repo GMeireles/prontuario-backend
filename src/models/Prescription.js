@@ -1,21 +1,26 @@
-// models/Prescription.js
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
-import Patient from './Patient.js';
-import User from './User.js';
+'use strict';
+import { Model } from 'sequelize';
 
-const Prescription = sequelize.define('Prescription', {
-  type: { type: DataTypes.ENUM('medication', 'conduct', 'referral'), allowNull: false },
-  description: { type: DataTypes.TEXT, allowNull: false },
-  dosage: { type: DataTypes.STRING },
-  frequency: { type: DataTypes.STRING },
-  duration: { type: DataTypes.STRING }
-}, {
-  tableName: 'prescriptions',
-  timestamps: true
-});
+export default (sequelize, DataTypes) => {
+  class Prescription extends Model {
+    static associate(models) {
+      Prescription.belongsTo(models.Patient, { foreignKey: 'patient_id', as: 'patient' });
+      Prescription.belongsTo(models.User, { foreignKey: 'professional_id', as: 'professional' });
+    }
+  }
 
-Prescription.belongsTo(Patient, { foreignKey: 'patient_id', as: 'patient' });
-Prescription.belongsTo(User, { foreignKey: 'professional_id', as: 'professional' });
+  Prescription.init({
+    type: { type: DataTypes.ENUM('medication', 'conduct', 'referral'), allowNull: false },
+    description: { type: DataTypes.TEXT, allowNull: false },
+    dosage: DataTypes.STRING,
+    frequency: DataTypes.STRING,
+    duration: DataTypes.STRING
+  }, {
+    sequelize,
+    modelName: 'Prescription',
+    tableName: 'prescriptions',
+    underscored: true
+  });
 
-export default Prescription;
+  return Prescription;
+};
