@@ -10,6 +10,7 @@ import recordRoutes from './routes/recordRoutes.js'
 import appointmentRoutes from './routes/appointmentRoutes.js'
 import anamneseRoutes from './routes/anamneseRoutes.js';
 import evolutionRoutes from './routes/evolutionRoutes.js';
+import prescriptionRoutes from './routes/prescriptionRoutes.js';
 
 // Middlewares globais
 import { errorHandler } from './middlewares/errorHandler.js'
@@ -28,6 +29,7 @@ app.use('/api/records', recordRoutes)
 app.use('/api/appointments', appointmentRoutes)
 app.use('/api/anamneses', anamneseRoutes);
 app.use('/api/evolutions', evolutionRoutes);
+app.use('/api/prescriptions', prescriptionRoutes);
 
 
 // Rotas inexistentes
