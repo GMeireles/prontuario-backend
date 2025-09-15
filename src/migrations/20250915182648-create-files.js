@@ -48,7 +48,7 @@ export async function up(queryInterface, Sequelize) {
       allowNull: false,
       references: { model: 'users', key: 'id' },
       onUpdate: 'CASCADE',
-      onDelete: 'SET NULL'
+      onDelete: 'CASCADE'
     },
     created_at: {
       allowNull: false,
