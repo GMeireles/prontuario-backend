@@ -11,6 +11,7 @@ import appointmentRoutes from './routes/appointmentRoutes.js'
 import anamneseRoutes from './routes/anamneseRoutes.js';
 import evolutionRoutes from './routes/evolutionRoutes.js';
 import prescriptionRoutes from './routes/prescriptionRoutes.js';
+import fileRoutes from './routes/fileRoutes.js';
 
 // Middlewares globais
 import { errorHandler } from './middlewares/errorHandler.js'
@@ -30,6 +31,7 @@ app.use('/api/appointments', appointmentRoutes)
 app.use('/api/anamneses', anamneseRoutes);
 app.use('/api/evolutions', evolutionRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
+app.use('/api/files', fileRoutes);
 
 
 // Rotas inexistentes
