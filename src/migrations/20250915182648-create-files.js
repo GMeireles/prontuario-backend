@@ -5,14 +5,22 @@ export async function up(queryInterface, Sequelize) {
     id: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
+      allowNull: false
     },
     patient_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: { model: 'patients', key: 'id' },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE'
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    },
+    tenant_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: { model: 'tenants', key: 'id' },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
     },
     type: {
       type: Sequelize.ENUM('exam', 'image', 'document', 'other'),
@@ -39,8 +47,8 @@ export async function up(queryInterface, Sequelize) {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: { model: 'users', key: 'id' },
-      onDelete: 'SET NULL',
-      onUpdate: 'CASCADE'
+      onUpdate: 'CASCADE',
+      onDelete: 'SET NULL'
     },
     created_at: {
       allowNull: false,
@@ -55,7 +63,7 @@ export async function up(queryInterface, Sequelize) {
   });
 }
 
-export async function down(queryInterface, Sequelize) {
+export async function down(queryInterface) {
   await queryInterface.dropTable('files');
   await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_files_type";');
 }

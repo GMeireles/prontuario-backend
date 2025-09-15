@@ -6,6 +6,7 @@ export default (sequelize, DataTypes) => {
     static associate(models) {
       File.belongsTo(models.Patient, { foreignKey: 'patient_id', as: 'patient' });
       File.belongsTo(models.User, { foreignKey: 'uploaded_by', as: 'uploader' });
+      File.belongsTo(models.Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
     }
   }
 

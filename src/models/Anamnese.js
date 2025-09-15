@@ -6,6 +6,7 @@ export default (sequelize, DataTypes) => {
     static associate(models) {
       Anamnese.belongsTo(models.Patient, { foreignKey: 'patient_id', as: 'patient' });
       Anamnese.belongsTo(models.User, { foreignKey: 'professional_id', as: 'professional' });
+      Anamnese.belongsTo(models.Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
     }
   }
 

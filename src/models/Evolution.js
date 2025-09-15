@@ -6,6 +6,7 @@ export default (sequelize, DataTypes) => {
     static associate(models) {
       Evolution.belongsTo(models.Patient, { foreignKey: 'patient_id', as: 'patient' });
       Evolution.belongsTo(models.User, { foreignKey: 'professional_id', as: 'professional' });
+      Evolution.belongsTo(models.Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
     }
   }
 

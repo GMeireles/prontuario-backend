@@ -1,60 +1,59 @@
-// migrations/20250915130000-create-prescriptions.js
 'use strict';
 
-module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('prescriptions', {
-      id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false
-      },
-      patient_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: { model: 'patients', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-      },
-      professional_id: {
-            type: Sequelize.INTEGER,
-            allowNull: false,
-            references: { model: 'users', key: 'id' },
-            onDelete: 'CASCADE',   // se o profissional for apagado, apaga as consultas
-            onUpdate: 'CASCADE'
-          },
-      type: {
-        type: Sequelize.ENUM('medication', 'conduct', 'referral'),
-        allowNull: false
-      },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: false
-      },
-      dosage: {
-        type: Sequelize.STRING
-      },
-      frequency: {
-        type: Sequelize.STRING
-      },
-      duration: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW')
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW')
-      }
-    });
-  },
+export async function up(queryInterface, Sequelize) {
+  await queryInterface.createTable('prescriptions', {
+    id: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
+    },
+    patient_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: { model: 'patients', key: 'id' },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    },
+    professional_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: { model: 'users', key: 'id' },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    },
+    tenant_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: { model: 'tenants', key: 'id' },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    },
+    type: {
+      type: Sequelize.ENUM('medication', 'conduct', 'referral'),
+      allowNull: false
+    },
+    description: {
+      type: Sequelize.TEXT,
+      allowNull: false
+    },
+    dosage: Sequelize.STRING,
+    frequency: Sequelize.STRING,
+    duration: Sequelize.STRING,
+    created_at: {
+      allowNull: false,
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+    },
+    updated_at: {
+      allowNull: false,
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+    }
+  });
+}
 
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('prescriptions');
-  }
-};
+export async function down(queryInterface) {
+  await queryInterface.dropTable('prescriptions');
+  await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_prescriptions_type";');
+}
