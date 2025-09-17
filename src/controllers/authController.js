@@ -9,8 +9,10 @@ const generateAccessToken = (user) => {
   return jwt.sign(
     { id: user.id, email: user.email, role: user.role, tenant_id: user.tenant_id },
     process.env.JWT_SECRET,
+    console.log('[AUTH] JWT_SECRET usado no login:', process.env.JWT_SECRET),
     { expiresIn: '15m' } // curta duração
   );
+  
 };
 
 const generateRefreshToken = async (user) => {

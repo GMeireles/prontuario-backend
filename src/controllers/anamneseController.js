@@ -1,15 +1,17 @@
 // controllers/anamneseController.js
-import Anamnese from '../models/Anamnese.js';
-import Patient from '../models/Patient.js';
-import User from '../models/User.js';
+import db from '../models/index.js';
+const { Anamnese, Patient, User } = db;
 
 export const createAnamnese = async (req, res, next) => {
   try {
-    const { patient_id, main_complaint, medical_history, family_history, lifestyle, allergies } = req.body;
+    const { patientId } = req.params;
+    const { main_complaint, medical_history, family_history, lifestyle, allergies } = req.body;
     const professional_id = req.user.id;
 
     const anamnese = await Anamnese.create({
-      patient_id,
+      patient_id: patientId,
+      // tenant_id: req.user.tenant_id,
+      tenant_id: 1,
       professional_id,
       main_complaint,
       medical_history,
@@ -73,5 +75,23 @@ export const deleteAnamnese = async (req, res, next) => {
     res.json({ success: true, message: 'Anamnese removida com sucesso' });
   } catch (error) {
     next(error);
+  }
+};
+
+export const getAnamneseByPatient = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+
+    const anamnese = await Anamnese.findOne({
+      where: { patient_id: patientId, tenant_id: req.user.tenant_id },
+    });
+
+    if (!anamnese) {
+      return res.json(null); // retorna vazio
+    }
+
+    res.json(anamnese);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

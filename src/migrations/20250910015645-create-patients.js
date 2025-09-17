@@ -15,12 +15,37 @@ export async function up(queryInterface, Sequelize) {
       type: Sequelize.STRING(100),
       allowNull: false
     },
+    cpf: {
+      type: Sequelize.STRING(11),
+      allowNull: false,
+      unique: true
+    },
     birth_date: {
       type: Sequelize.DATEONLY,
       allowNull: false
     },
+    gender: {
+      type: Sequelize.ENUM('M', 'F', 'O'),
+      allowNull: false
+    },
     phone: {
       type: Sequelize.STRING(20)
+    },
+    address: {
+      type: Sequelize.STRING(255)
+    },
+    city: {
+      type: Sequelize.STRING(100)
+    },
+    state: {
+      type: Sequelize.STRING(2)
+    },
+    zip_code: {
+      type: Sequelize.STRING(9)
+    },
+    responsible_name: {
+      type: Sequelize.STRING(100),
+      allowNull: true
     },
     email: {
       type: Sequelize.STRING(100)

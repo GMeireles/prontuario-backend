@@ -13,6 +13,7 @@ import evolutionRoutes from './routes/evolutionRoutes.js';
 import prescriptionRoutes from './routes/prescriptionRoutes.js';
 import fileRoutes from './routes/fileRoutes.js';
 import tenantRoutes from './routes/tenantRoutes.js';
+import userRoutes from "./routes/userRoutes.js";
 
 // Middlewares globais
 import { errorHandler } from './middlewares/errorHandler.js'
@@ -34,6 +35,7 @@ app.use('/api/evolutions', evolutionRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/tenants', tenantRoutes);
+app.use("/api/users", userRoutes);
 
 
 // Rotas inexistentes

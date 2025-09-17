@@ -1,23 +1,70 @@
 // routes/anamneseRoutes.js
 import express from 'express';
-import { createAnamnese, listAnamneses, updateAnamnese, deleteAnamnese } from '../controllers/anamneseController.js';
+import {
+  createAnamnese,
+  listAnamneses,
+  updateAnamnese,
+  deleteAnamnese,
+  getAnamneseByPatient
+} from '../controllers/anamneseController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { roleMiddleware } from '../middlewares/roleMiddleware.js';
+import { tenantMiddleware } from '../middlewares/tenantMiddleware.js';
 import { validate } from '../middlewares/validate.js';
-import { anamneseCreateValidation, anamneseUpdateValidation } from '../validations/anamneseValidation.js';
+import {
+  anamneseCreateValidation,
+  anamneseUpdateValidation
+} from '../validations/anamneseValidation.js';
 
 const router = express.Router();
 
-// Criar anamnese
-router.post('/', authMiddleware, roleMiddleware(['professional']), anamneseCreateValidation, validate, createAnamnese);
+// Criar anamnese para um paciente
+router.post(
+  '/patient/:patientId',
+  authMiddleware,
+  tenantMiddleware,
+  roleMiddleware(['professional']),
+  anamneseCreateValidation,
+  validate,
+  createAnamnese
+);
 
-// Listar anamneses de um paciente
-router.get('/:patientId', authMiddleware, roleMiddleware(['admin', 'professional']), listAnamneses);
+// Buscar a anamnese única de um paciente
+router.get(
+  '/patient/:patientId',
+  authMiddleware,
+  tenantMiddleware,
+  roleMiddleware(['admin', 'professional']),
+  getAnamneseByPatient
+);
 
-// Atualizar anamnese
-router.put('/:id', authMiddleware, roleMiddleware(['professional']), anamneseUpdateValidation, validate, updateAnamnese);
+// Listar todas as anamneses de um paciente (se for manter histórico)
+router.get(
+  '/all/:patientId',
+  authMiddleware,
+  tenantMiddleware,
+  roleMiddleware(['admin', 'professional']),
+  listAnamneses
+);
 
-// Excluir anamnese
-router.delete('/:id', authMiddleware, roleMiddleware(['professional']), deleteAnamnese);
+// Atualizar
+router.put(
+  '/:id',
+  authMiddleware,
+  tenantMiddleware,
+  roleMiddleware(['professional']),
+  anamneseUpdateValidation,
+  validate,
+  updateAnamnese
+);
+
+// Excluir
+router.delete(
+  '/:id',
+  authMiddleware,
+  tenantMiddleware,
+  roleMiddleware(['professional']),
+  deleteAnamnese
+);
 
 export default router;

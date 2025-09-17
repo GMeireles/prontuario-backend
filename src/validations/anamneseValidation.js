@@ -2,9 +2,9 @@
 import { body } from 'express-validator';
 
 export const anamneseCreateValidation = [
-  body('patient_id').isInt().withMessage('Paciente inválido'),
+  // body('patient_id').isInt().withMessage('Paciente inválido'),
   body('main_complaint').notEmpty().withMessage('Queixa principal é obrigatória'),
-  body('tenant_id').isInt().withMessage('Tenant ID é obrigatório e deve ser numérico')
+  // body('tenant_id').isInt().withMessage('Tenant ID é obrigatório e deve ser numérico')
 ];
 
 export const anamneseUpdateValidation = [

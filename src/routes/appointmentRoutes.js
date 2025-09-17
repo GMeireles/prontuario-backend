@@ -1,5 +1,5 @@
 import express from 'express'
-import { listAppointments, createAppointment, updateAppointment, deleteAppointment, cancelAppointment, confirmAppointment, completeAppointment } from '../controllers/appointmentController.js'
+import { listAppointments, createAppointment, updateAppointment, deleteAppointment, cancelAppointment, confirmAppointment, completeAppointment, listTodayAppointments } from '../controllers/appointmentController.js'
 import { authMiddleware } from '../middlewares/authMiddleware.js'
 import { tenantMiddleware } from '../middlewares/tenantMiddleware.js'
 import { roleMiddleware } from '../middlewares/roleMiddleware.js'
@@ -7,6 +7,9 @@ import { validate } from '../middlewares/validate.js'
 import { appointmentCreateValidation, appointmentUpdateValidation, appointmentCancelValidation } from '../validations/appointmentValidation.js';
 
 const router = express.Router()
+
+// Consultas do dia
+router.get("/today", authMiddleware, tenantMiddleware, roleMiddleware(["admin", "professional"]), listTodayAppointments);
 
 // Listar consultas (todos os roles podem ver)
 router.get('/', authMiddleware, tenantMiddleware, roleMiddleware(['admin','professional','assistant']), listAppointments)
@@ -31,5 +34,7 @@ router.put('/:id/confirm', authMiddleware, roleMiddleware(['professional']), con
 
 // Concluir
 router.put('/:id/complete', authMiddleware, roleMiddleware(['professional']), completeAppointment);
+
+router.get('/today', authMiddleware, listTodayAppointments)
 
 export default router

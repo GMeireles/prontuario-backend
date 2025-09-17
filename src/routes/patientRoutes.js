@@ -1,5 +1,5 @@
 import express from 'express'
-import { listPatients, createPatient, updatePatient, deletePatient } from '../controllers/patientController.js'
+import { listPatients, createPatient, updatePatient, deletePatient, listRecentPatients, getPatient } from '../controllers/patientController.js'
 import { authMiddleware } from '../middlewares/authMiddleware.js'
 import { tenantMiddleware } from '../middlewares/tenantMiddleware.js'
 import { roleMiddleware } from '../middlewares/roleMiddleware.js'
@@ -19,5 +19,11 @@ router.put('/:id', authMiddleware, tenantMiddleware, roleMiddleware(['admin','pr
 
 // Remover paciente (apenas admin)
 router.delete('/:id', authMiddleware, tenantMiddleware, roleMiddleware(['admin']), deletePatient)
+
+router.get('/recent', authMiddleware, listRecentPatients)
+
+// Retornar 1 paciente
+router.get('/:id', authMiddleware, tenantMiddleware, roleMiddleware(['admin','professional']), getPatient);
+
 
 export default router
