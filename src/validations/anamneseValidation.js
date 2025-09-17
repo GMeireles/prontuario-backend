@@ -1,10 +1,8 @@
-// validations/anamneseValidation.js
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 export const anamneseCreateValidation = [
-  // body('patient_id').isInt().withMessage('Paciente inválido'),
+  param('patientId').isInt().withMessage('Paciente inválido'),
   body('main_complaint').notEmpty().withMessage('Queixa principal é obrigatória'),
-  // body('tenant_id').isInt().withMessage('Tenant ID é obrigatório e deve ser numérico')
 ];
 
 export const anamneseUpdateValidation = [

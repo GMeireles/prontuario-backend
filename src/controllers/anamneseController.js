@@ -10,8 +10,7 @@ export const createAnamnese = async (req, res, next) => {
 
     const anamnese = await Anamnese.create({
       patient_id: patientId,
-      // tenant_id: req.user.tenant_id,
-      tenant_id: 1,
+      tenant_id: req.tenant_id,   // ✅ agora pega do middleware
       professional_id,
       main_complaint,
       medical_history,
