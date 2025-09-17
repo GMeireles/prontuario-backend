@@ -2,7 +2,7 @@ export default {
   development: {
     username: process.env.DB_USER || "guilherme",
     password: process.env.DB_PASS || "Loveforever@2003",
-    database: process.env.DB_NAME || "prontuario_development",
+    database: process.env.DB_NAME || "saas_prontuario_production",
     host: process.env.DB_HOST || "127.0.0.1",
     dialect: "mysql"
   },
