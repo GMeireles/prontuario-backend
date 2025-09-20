@@ -44,7 +44,7 @@ app.use(notFoundHandler)
 // Error handler global
 app.use(errorHandler)
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT
 
 db.sequelize.sync().then(() => {
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
