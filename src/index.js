@@ -12,6 +12,7 @@ import anamneseRoutes from './routes/anamneseRoutes.js';
 import evolutionRoutes from './routes/evolutionRoutes.js';
 import prescriptionRoutes from './routes/prescriptionRoutes.js';
 import fileRoutes from './routes/fileRoutes.js';
+import prescriptionFileRoutes from './routes/prescriptionFileRoutes.js'
 import tenantRoutes from './routes/tenantRoutes.js';
 import userRoutes from "./routes/userRoutes.js";
 
@@ -36,6 +37,8 @@ app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use("/api/users", userRoutes);
+// anexos de prescrições
+app.use('/api/prescriptions', prescriptionFileRoutes)
 
 
 // Rotas inexistentes

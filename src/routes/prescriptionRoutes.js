@@ -9,15 +9,15 @@ import { prescriptionCreateValidation, prescriptionUpdateValidation } from '../v
 const router = express.Router();
 
 // Criar prescrição
-router.post('/', authMiddleware, roleMiddleware(['professional']), prescriptionCreateValidation, validate, createPrescription);
+router.post('/', authMiddleware, roleMiddleware(['admin', 'professional']), prescriptionCreateValidation, validate, createPrescription);
 
 // Listar prescrições de um paciente
 router.get('/:patientId', authMiddleware, roleMiddleware(['admin', 'professional']), listPrescriptions);
 
 // Atualizar prescrição
-router.put('/:id', authMiddleware, roleMiddleware(['professional']), prescriptionUpdateValidation, validate, updatePrescription);
+router.put('/:id', authMiddleware, roleMiddleware(['admin', 'professional']), prescriptionUpdateValidation, validate, updatePrescription);
 
 // Excluir prescrição
-router.delete('/:id', authMiddleware, roleMiddleware(['professional']), deletePrescription);
+router.delete('/:id', authMiddleware, roleMiddleware(['admin', 'professional']), deletePrescription);
 
 export default router;

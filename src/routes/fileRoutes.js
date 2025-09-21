@@ -8,7 +8,7 @@ import { upload } from '../utils/upload.js';
 const router = express.Router();
 
 // upload de arquivo
-router.post('/', authMiddleware, roleMiddleware(['professional']), upload.single('file'), uploadFile);
+router.post('/', authMiddleware, roleMiddleware(['admin','professional']), upload.single('file'), uploadFile);
 
 // listar arquivos de um paciente
 router.get('/:patientId', authMiddleware, roleMiddleware(['admin', 'professional']), listFiles);

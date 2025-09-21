@@ -8,7 +8,7 @@ export const prescriptionCreateValidation = [
   body('dosage').optional(),
   body('frequency').optional(),
   body('duration').optional(),
-    body('tenant_id').isInt().withMessage('Tenant ID é obrigatório e deve ser numérico')
+    // body('tenant_id').isInt().withMessage('Tenant ID é obrigatório e deve ser numérico')
 ];
 
 export const prescriptionUpdateValidation = [

@@ -7,6 +7,12 @@ export default (sequelize, DataTypes) => {
       Prescription.belongsTo(models.Patient, { foreignKey: 'patient_id', as: 'patient' });
       Prescription.belongsTo(models.User, { foreignKey: 'professional_id', as: 'professional' });
       Prescription.belongsTo(models.Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+      // relação com arquivos
+      Prescription.hasMany(models.PrescriptionFile, {
+        foreignKey: 'prescription_id',
+        as: 'prescription_files'
+      });
     }
   }
 
