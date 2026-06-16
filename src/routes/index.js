@@ -10,10 +10,12 @@ import fileRoutes from './fileRoutes.js';
 import prescriptionFileRoutes from './prescriptionFileRoutes.js';
 import tenantRoutes from './tenantRoutes.js';
 import userRoutes from './userRoutes.js';
+import billingRoutes from './billingRoutes.js';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
+router.use('/billing', billingRoutes);
 router.use('/patients', patientRoutes);
 router.use('/records', recordRoutes);
 router.use('/appointments', appointmentRoutes);

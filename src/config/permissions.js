@@ -28,6 +28,8 @@ export const PERMISSIONS = {
   PRESCRIPTIONS_VIEW: 'prescriptions.view',
   PRESCRIPTIONS_CREATE: 'prescriptions.create',
   PRESCRIPTIONS_UPDATE: 'prescriptions.update',
+  BILLING_VIEW: 'billing.view',
+  BILLING_MANAGE: 'billing.manage',
 };
 
 const ALL = Object.values(PERMISSIONS);
