@@ -4,7 +4,8 @@ import {
   listAnamneses,
   updateAnamnese,
   deleteAnamnese,
-  getAnamneseByPatient
+  getAnamneseByPatient,
+  signAnamnese
 } from '../controllers/anamneseController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { tenantContextMiddleware } from '../middleware/tenantContext.js';
@@ -12,7 +13,7 @@ import { requireActiveSubscription } from '../middleware/requireActiveSubscripti
 import { requirePermission } from '../middleware/permissionMiddleware.js';
 import { validate } from '../middleware/validate.js';
 import { PERMISSIONS } from '../config/permissions.js';
-import { anamneseCreateValidation, anamneseUpdateValidation } from '../validators/anamneseValidation.js';
+import { anamneseCreateValidation, anamneseUpdateValidation, anamneseSignValidation } from '../validators/anamneseValidation.js';
 
 const router = express.Router();
 
@@ -54,6 +55,17 @@ router.put(
   anamneseUpdateValidation,
   validate,
   updateAnamnese
+);
+
+router.post(
+  '/:id/sign',
+  authMiddleware,
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.SIGNATURES_CREATE),
+  anamneseSignValidation,
+  validate,
+  signAnamnese
 );
 
 router.delete(

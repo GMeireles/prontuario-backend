@@ -32,6 +32,12 @@ export const PERMISSIONS = {
   PRESCRIPTIONS_VIEW: 'prescriptions.view',
   PRESCRIPTIONS_CREATE: 'prescriptions.create',
   PRESCRIPTIONS_UPDATE: 'prescriptions.update',
+  ANAMNESE_TEMPLATES_VIEW: 'anamnese_templates.view',
+  ANAMNESE_TEMPLATES_CREATE: 'anamnese_templates.create',
+  ANAMNESE_TEMPLATES_UPDATE: 'anamnese_templates.update',
+  ANAMNESE_TEMPLATES_DELETE: 'anamnese_templates.delete',
+  SIGNATURES_VIEW: 'signatures.view',
+  SIGNATURES_CREATE: 'signatures.create',
   BILLING_VIEW: 'billing.view',
   BILLING_MANAGE: 'billing.manage',
 };
@@ -59,6 +65,9 @@ const PROFESSIONAL_PERMISSIONS = [
   PERMISSIONS.PRESCRIPTIONS_VIEW,
   PERMISSIONS.PRESCRIPTIONS_CREATE,
   PERMISSIONS.PRESCRIPTIONS_UPDATE,
+  PERMISSIONS.ANAMNESE_TEMPLATES_VIEW,
+  PERMISSIONS.SIGNATURES_VIEW,
+  PERMISSIONS.SIGNATURES_CREATE,
 ];
 
 /** assistant (DB) = receptionist (produto) */

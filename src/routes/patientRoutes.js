@@ -9,6 +9,7 @@ import {
   getPatientSummary
 } from '../controllers/patientController.js';
 import patientAasiRoutes from './patientAasiRoutes.js';
+import { listPatientSignatures } from '../controllers/signatureController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { tenantContextMiddleware } from '../middleware/tenantContext.js';
 import { requireActiveSubscription } from '../middleware/requireActiveSubscription.js';
@@ -52,6 +53,13 @@ router.get(
 );
 
 router.use('/:patientId/aasis', patientAasiRoutes);
+
+router.get(
+  '/:patientId/signatures',
+  ...stack,
+  requirePermission(PERMISSIONS.SIGNATURES_VIEW),
+  listPatientSignatures
+);
 
 router.get(
   '/:id',

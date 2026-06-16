@@ -162,3 +162,15 @@ Ver [`../PHASE_6_PATIENTS_AASI_REPORT.md`](../PHASE_6_PATIENTS_AASI_REPORT.md).
 - Rotas aninhadas `/patients/:id/aasis`, summary endpoint
 - Permissões `aasis.*` e ajuste professional (view only patients)
 - Smoke: 19/20+ PASS
+
+---
+
+## Fase 7 — Anamnese flexível + assinatura (2026-06-16)
+
+Ver [`../PHASE_7_ANAMNESE_SIGNATURE_REPORT.md`](../PHASE_7_ANAMNESE_SIGNATURE_REPORT.md).
+
+- Migrations templates, fields, answers, signatures
+- Services template/answer/signature + refactor anamnese
+- Rotas `/anamnese-templates`, `/signatures`, `POST /anamneses/:id/sign`
+- Seeder template audiológico padrão
+- Smoke: 26/26 PASS
