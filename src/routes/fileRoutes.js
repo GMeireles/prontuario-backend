@@ -1,20 +1,49 @@
-// routes/fileRoutes.js
 import express from 'express';
 import { uploadFile, listFiles, downloadFile, deleteFile } from '../controllers/fileController.js';
-import { authMiddleware } from '../middlewares/authMiddleware.js';
-import { roleMiddleware } from '../middlewares/roleMiddleware.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+import { tenantContextMiddleware } from '../middleware/tenantContext.js';
+import { requireActiveSubscription } from '../middleware/requireActiveSubscription.js';
+import { requirePermission } from '../middleware/permissionMiddleware.js';
 import { upload } from '../utils/upload.js';
+import { PERMISSIONS } from '../config/permissions.js';
 
 const router = express.Router();
 
-// upload de arquivo
-router.post('/', authMiddleware, roleMiddleware(['admin','professional']), upload.single('file'), uploadFile);
+router.post(
+  '/',
+  authMiddleware,
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.FILES_UPLOAD),
+  upload.single('file'),
+  uploadFile
+);
 
-// listar arquivos de um paciente
-router.get('/:patientId', authMiddleware, roleMiddleware(['admin', 'professional']), listFiles);
+router.get(
+  '/:id/download',
+  authMiddleware,
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.FILES_DOWNLOAD),
+  downloadFile
+);
 
-router.get('/:id/download', authMiddleware, downloadFile);
+router.get(
+  '/:patientId',
+  authMiddleware,
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.FILES_VIEW),
+  listFiles
+);
 
-router.delete('/:id', authMiddleware, deleteFile);
+router.delete(
+  '/:id',
+  authMiddleware,
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.FILES_UPLOAD),
+  deleteFile
+);
 
 export default router;

@@ -1,80 +1,50 @@
-// controllers/fileController.js
-import db from '../models/index.js';
-const { File } = db;
-import { Op } from 'sequelize'
+import { fileService } from '../services/fileService.js';
+import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export const uploadFile = async (req, res) => {
   try {
     if (!req.file) {
-      console.error('⚠️ Nenhum arquivo recebido pelo multer', req.body)
-      return res.status(400).json({ error: 'Nenhum arquivo enviado' })
+      return errorResponse(res, 'Nenhum arquivo enviado', null, 400);
     }
 
-    const file = await File.create({
-      filename: req.file.filename,
-      filepath: req.file.path,
-      mimetype: req.file.mimetype,
-      size: req.file.size,
-      type: req.body.type || 'document',
-      patient_id: req.body.patient_id,
-      tenant_id: req.user.tenant_id,
-      uploaded_by: req.user.id
-    })
-
-    res.status(201).json(file)
+    const file = await fileService.createFromUpload(
+      req.file,
+      req.body,
+      req.user.tenant_id,
+      req.user.id
+    );
+    return successResponse(res, file, { status: 201, message: 'Arquivo enviado com sucesso' });
   } catch (err) {
-    console.error('Erro uploadFile:', err)
-    res.status(500).json({ error: 'Erro ao salvar arquivo', details: err.message })
+    console.error('Erro uploadFile:', err);
+    return errorResponse(res, 'Erro ao salvar arquivo', [{ message: err.message }], 500);
   }
-}
-
+};
 
 export const downloadFile = async (req, res) => {
   try {
-    const file = await File.findByPk(req.params.id);
-    if (!file || file.tenant_id !== req.user.tenant_id) {
-      return res.status(404).json({ error: 'Arquivo não encontrado' });
-    }
-
+    const file = await fileService.findById(req.params.id, req.user.tenant_id);
+    if (!file) return errorResponse(res, 'Arquivo não encontrado', null, 404);
     res.download(file.filepath, file.filename);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao baixar arquivo' });
+    return errorResponse(res, 'Erro ao baixar arquivo', null, 500);
   }
 };
 
 export const deleteFile = async (req, res) => {
   try {
-    const file = await File.findByPk(req.params.id);
-    if (!file || file.tenant_id !== req.user.tenant_id) {
-      return res.status(404).json({ error: 'Arquivo não encontrado' });
-    }
-
-    fs.unlinkSync(path.resolve(file.filepath));
-    await file.destroy();
-
-    res.json({ success: true, message: 'Arquivo removido com sucesso' });
+    const deleted = await fileService.delete(req.params.id, req.user.tenant_id);
+    if (!deleted) return errorResponse(res, 'Arquivo não encontrado', null, 404);
+    return successResponse(res, null, { message: 'Arquivo removido com sucesso' });
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao excluir arquivo' });
+    return errorResponse(res, 'Erro ao excluir arquivo', null, 500);
   }
 };
 
 export const listFiles = async (req, res) => {
   try {
-    const { patientId } = req.params;
-
-    const files = await File.findAll({
-      where: {
-        patient_id: patientId,
-        type: { [Op.ne]: 'prescription' }
-      },
-      order: [['created_at', 'DESC']]
-    });
-
-    res.json({ success: true, data: files });
+    const files = await fileService.listByPatient(req.params.patientId);
+    return successResponse(res, files);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao listar arquivos' });
+    return errorResponse(res, 'Erro ao listar arquivos', null, 500);
   }
 };
-
-
-

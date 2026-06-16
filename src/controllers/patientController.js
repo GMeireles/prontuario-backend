@@ -1,149 +1,73 @@
-import db from '../models/index.js'
-const { Patient } = db
+import { patientService } from '../services/patientService.js';
+import { patientSummaryService } from '../services/patientSummaryService.js';
+import { successResponse, errorResponse, paginatedResponse } from '../utils/apiResponse.js';
 
-// Listar todos os pacientes do tenant
 export const listPatients = async (req, res) => {
   try {
-    const patients = await Patient.findAll({
-      where: { tenant_id: req.user.tenant_id }
-    })
-    res.json(patients)
+    const result = await patientService.list(req.tenant_id, req.query);
+    return paginatedResponse(res, result.data, result.pagination);
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    return errorResponse(res, err.message, null, 500);
   }
-}
+};
 
-// Criar paciente
 export const createPatient = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      birth_date,
-      cpf,
-      gender,
-      phone,
-      address,
-      city,
-      state,
-      zip_code,
-      responsible_name
-    } = req.body
-
-    // Verificar idade do paciente
-    const age = Math.floor((Date.now() - new Date(birth_date).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
-    if (age < 18 && !responsible_name) {
-      return res.status(400).json({ error: 'Responsável é obrigatório para menores de 18 anos' })
-    }
-
-    const patient = await Patient.create({
-      name,
-      email,
-      birth_date,
-      cpf,
-      gender,
-      phone,
-      address,
-      city,
-      state,
-      zip_code,
-      responsible_name: age < 18 ? responsible_name : null,
-      tenant_id: req.user.tenant_id
-    })
-
-    res.status(201).json(patient)
+    const patient = await patientService.create(req.body, req.tenant_id);
+    return successResponse(res, patient, { status: 201, message: 'Paciente criado com sucesso' });
   } catch (err) {
-    res.status(400).json({ error: err.message })
+    return errorResponse(res, err.message, null, err.status || 400);
   }
-}
+};
 
-// Atualizar paciente
 export const updatePatient = async (req, res) => {
   try {
-    const patient = await Patient.findOne({
-      where: { id: req.params.id, tenant_id: req.user.tenant_id }
-    })
-    if (!patient) return res.status(404).json({ error: 'Paciente não encontrado' })
-
-    const {
-      name,
-      email,
-      birth_date,
-      cpf,
-      gender,
-      phone,
-      address,
-      city,
-      state,
-      zip_code,
-      responsible_name
-    } = req.body
-
-    const age = Math.floor((Date.now() - new Date(birth_date).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
-    if (age < 18 && !responsible_name) {
-      return res.status(400).json({ error: 'Responsável é obrigatório para menores de 18 anos' })
-    }
-
-    await patient.update({
-      name,
-      email,
-      birth_date,
-      cpf,
-      gender,
-      phone,
-      address,
-      city,
-      state,
-      zip_code,
-      responsible_name: age < 18 ? responsible_name : null
-    })
-
-    res.json(patient)
+    const patient = await patientService.update(req.params.id, req.body, req.tenant_id);
+    if (!patient) return errorResponse(res, 'Paciente não encontrado', null, 404);
+    return successResponse(res, patient, { message: 'Paciente atualizado com sucesso' });
   } catch (err) {
-    res.status(400).json({ error: err.message })
+    return errorResponse(res, err.message, null, err.status || 400);
   }
-}
+};
 
-// Deletar paciente
 export const deletePatient = async (req, res) => {
   try {
-    const patient = await Patient.findOne({
-      where: { id: req.params.id, tenant_id: req.user.tenant_id }
-    })
-    if (!patient) return res.status(404).json({ error: 'Paciente não encontrado' })
-
-    await patient.destroy()
-    res.json({ message: 'Paciente removido com sucesso' })
+    const result = await patientService.archive(req.params.id, req.tenant_id);
+    if (!result.found) return errorResponse(res, 'Paciente não encontrado', null, 404);
+    const message = result.hardDeleted
+      ? 'Paciente removido com sucesso'
+      : 'Paciente arquivado com sucesso';
+    return successResponse(res, { archived: result.archived, hardDeleted: result.hardDeleted }, { message });
   } catch (err) {
-    res.status(400).json({ error: err.message })
+    return errorResponse(res, err.message, null, err.status || 400);
   }
-}
+};
 
-// Listar pacientes mais recentes
 export const listRecentPatients = async (req, res) => {
   try {
-    const patients = await Patient.findAll({
-      where: { tenant_id: req.user.tenant_id },
-      order: [['createdAt', 'DESC']],
-      limit: 5
-    })
-    res.json(patients)
+    const patients = await patientService.listRecent(req.tenant_id);
+    return successResponse(res, patients);
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    return errorResponse(res, err.message, null, 500);
   }
-}
+};
 
-// listar 1 paciente
 export const getPatient = async (req, res) => {
   try {
-    const patient = await Patient.findOne({
-      where: { id: req.params.id, tenant_id: req.user.tenant_id },
-    });
-    if (!patient) {
-      return res.status(404).json({ error: "Paciente não encontrado" });
-    }
-    res.json(patient);
+    const patient = await patientService.getById(req.params.id, req.tenant_id);
+    if (!patient) return errorResponse(res, 'Paciente não encontrado', null, 404);
+    return successResponse(res, patient);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return errorResponse(res, err.message, null, 500);
+  }
+};
+
+export const getPatientSummary = async (req, res) => {
+  try {
+    const summary = await patientSummaryService.getSummary(req.params.id, req.tenant_id);
+    if (!summary) return errorResponse(res, 'Paciente não encontrado', null, 404);
+    return successResponse(res, summary);
+  } catch (err) {
+    return errorResponse(res, err.message, null, 500);
   }
 };

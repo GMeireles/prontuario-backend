@@ -1,107 +1,47 @@
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import { v4 as uuidv4 } from 'uuid';
-import db from '../models/index.js'
-
-const { User, Tenant, RefreshToken } = db
-
-const generateAccessToken = (user) => {
-  return jwt.sign(
-    { id: user.id, email: user.email, role: user.role, tenant_id: user.tenant_id },
-    process.env.JWT_SECRET,
-    console.log('[AUTH] JWT_SECRET usado no login:', process.env.JWT_SECRET),
-    { expiresIn: '15m' } // curta duração
-  );
-  
-};
-
-const generateRefreshToken = async (user) => {
-  const token = uuidv4();
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + 7); // 7 dias
-
-  await RefreshToken.create({
-    user_id: user.id,
-    token,
-    expires_at: expiresAt
-  });
-
-  return token;
-};
+import { authService } from '../services/authService.js';
+import { getPermissionsForRole, getProfileLabel } from '../config/permissions.js';
+import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, tenant_id } = req.body
-
-    const tenant = await Tenant.findByPk(tenant_id)
-    if (!tenant) {
-      return res.status(404).json({ error: 'Tenant não encontrado.' })
-    }
-
-    const hashed = await bcrypt.hash(password, 10)
-
-    const user = await User.create({
-      name,
-      email,
-      password_hash: hashed,
-      role: 'admin', // ou 'professional', dependendo da lógica
-      tenant_id
-    })
-
-    res.status(201).json(user)
+    const user = await authService.register(req.body);
+    return successResponse(res, user, { status: 201, message: 'Usuário registrado com sucesso' });
   } catch (err) {
-    res.status(400).json({ error: err.message })
+    return errorResponse(res, err.message, null, err.status || 400);
   }
-}
+};
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(401).json({ error: 'Credenciais inválidas.' });
-
-    const validPassword = await bcrypt.compare(password, user.password_hash);
-    if (!validPassword) return res.status(401).json({ error: 'Credenciais inválidas.' });
-
-    const accessToken = generateAccessToken(user);
-    const refreshToken = await generateRefreshToken(user);
-
-    res.json({ accessToken, refreshToken });
+    const tokens = await authService.login(req.body);
+    return successResponse(res, tokens);
   } catch (err) {
-    res.status(500).json({ error: 'Erro interno no login.' });
+    return errorResponse(res, err.message || 'Erro interno no login.', null, err.status || 500);
   }
 };
 
 export const me = async (req, res) => {
-  res.json(req.user)
-}
+  return successResponse(res, {
+    ...req.user,
+    permissions: getPermissionsForRole(req.user.role),
+    profile: getProfileLabel(req.user.role),
+  });
+};
 
 export const refresh = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
-    if (!refreshToken) return res.status(400).json({ error: 'Refresh token é obrigatório.' });
-
-    const stored = await RefreshToken.findOne({ where: { token: refreshToken } });
-    if (!stored || stored.expires_at < new Date()) {
-      return res.status(403).json({ error: 'Refresh token inválido ou expirado.' });
-    }
-
-    const user = await User.findByPk(stored.user_id);
-    const newAccessToken = generateAccessToken(user);
-
-    res.json({ accessToken: newAccessToken });
+    const result = await authService.refresh(req.body.refreshToken);
+    return successResponse(res, result);
   } catch (err) {
-    res.status(500).json({ error: 'Erro interno ao renovar token.' });
+    return errorResponse(res, err.message || 'Erro interno ao renovar token.', null, err.status || 500);
   }
 };
 
 export const logout = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
-    await RefreshToken.destroy({ where: { token: refreshToken } });
-    res.json({ success: true, message: 'Logout realizado com sucesso' });
+    await authService.logout(req.body.refreshToken);
+    return successResponse(res, null, { message: 'Logout realizado com sucesso' });
   } catch (err) {
-    res.status(500).json({ error: 'Erro interno no logout.' });
+    return errorResponse(res, 'Erro interno no logout.', null, 500);
   }
 };

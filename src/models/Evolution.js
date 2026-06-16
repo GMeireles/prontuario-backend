@@ -11,6 +11,9 @@ export default (sequelize, DataTypes) => {
   }
 
   Evolution.init({
+    patient_id: { type: DataTypes.INTEGER, allowNull: false },
+    professional_id: { type: DataTypes.INTEGER, allowNull: false },
+    tenant_id: { type: DataTypes.INTEGER, allowNull: false },
     note: { type: DataTypes.TEXT, allowNull: false }
   }, {
     sequelize,

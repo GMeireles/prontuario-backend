@@ -1,46 +1,40 @@
-import db from '../models/index.js'
-const { Record } = db
+import { recordService } from '../services/recordService.js';
+import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export const listRecords = async (req, res) => {
-  const records = await Record.findAll({
-    where: { patient_id: req.params.patientId, tenant_id: req.tenant_id }
-  })
-  res.json(records)
-}
+  try {
+    const records = await recordService.listByPatient(req.params.patientId, req.tenant_id);
+    return successResponse(res, records);
+  } catch (err) {
+    return errorResponse(res, err.message, null, 500);
+  }
+};
 
 export const createRecord = async (req, res) => {
   try {
-    const record = await Record.create({
-      patient_id: req.params.patientId,
-      description: req.body.description,
-      tenant_id: req.tenant_id
-    })
-    res.status(201).json(record)
+    const record = await recordService.create(req.params.patientId, req.body.description, req.tenant_id);
+    return successResponse(res, record, { status: 201, message: 'Registro criado com sucesso' });
   } catch (err) {
-    res.status(400).json({ error: err.message })
+    return errorResponse(res, err.message, null, 400);
   }
-}
+};
 
 export const updateRecord = async (req, res) => {
   try {
-    const record = await Record.findOne({ where: { id: req.params.id, tenant_id: req.tenant_id } })
-    if (!record) return res.status(404).json({ error: 'Registro não encontrado' })
-
-    await record.update({ description: req.body.description })
-    res.json(record)
+    const record = await recordService.update(req.params.id, req.body.description, req.tenant_id);
+    if (!record) return errorResponse(res, 'Registro não encontrado', null, 404);
+    return successResponse(res, record, { message: 'Registro atualizado com sucesso' });
   } catch (err) {
-    res.status(400).json({ error: err.message })
+    return errorResponse(res, err.message, null, 400);
   }
-}
+};
 
 export const deleteRecord = async (req, res) => {
   try {
-    const record = await Record.findOne({ where: { id: req.params.id, tenant_id: req.tenant_id } })
-    if (!record) return res.status(404).json({ error: 'Registro não encontrado' })
-
-    await record.destroy()
-    res.json({ message: 'Registro removido com sucesso' })
+    const deleted = await recordService.delete(req.params.id, req.tenant_id);
+    if (!deleted) return errorResponse(res, 'Registro não encontrado', null, 404);
+    return successResponse(res, null, { message: 'Registro removido com sucesso' });
   } catch (err) {
-    res.status(400).json({ error: err.message })
+    return errorResponse(res, err.message, null, 400);
   }
-}
+};

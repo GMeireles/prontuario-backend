@@ -1,65 +1,41 @@
-// controllers/appointmentController.js
-import db from "../models/index.js";
-import { Op } from "sequelize";
-
-const { Appointment, Patient, User } = db;
+import { appointmentService } from '../services/appointmentService.js';
+import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export const listAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.findAll({
-      where: { tenant_id: req.user.tenant_id },
-      include: [{ model: Patient, as: "patient" }],
-      order: [["date_time", "ASC"]],
-    });
-    res.json(appointments);
+    const appointments = await appointmentService.list(req.user.tenant_id);
+    return successResponse(res, appointments);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return errorResponse(res, err.message, null, 500);
   }
 };
 
 export const createAppointment = async (req, res) => {
   try {
-    const appointment = await Appointment.create({
-      ...req.body,
-      tenant_id: req.user.tenant_id, // 👈 aqui também estava req.tenant_id errado
-      professional_id: req.user.id,
-    });
-    res.status(201).json(appointment);
+    const appointment = await appointmentService.create(req.body, req.user.tenant_id, req.user.id);
+    return successResponse(res, appointment, { status: 201, message: 'Consulta criada com sucesso' });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    return errorResponse(res, err.message, null, 400);
   }
 };
 
 export const deleteAppointment = async (req, res) => {
   try {
-    const appointment = await Appointment.findOne({
-      where: { id: req.params.id, tenant_id: req.user.tenant_id },
-    });
-    if (!appointment)
-      return res.status(404).json({ error: "Consulta não encontrada" });
-
-    await appointment.destroy();
-    res.json({ message: "Consulta removida com sucesso" });
+    const deleted = await appointmentService.delete(req.params.id, req.user.tenant_id);
+    if (!deleted) return errorResponse(res, 'Consulta não encontrada', null, 404);
+    return successResponse(res, null, { message: 'Consulta removida com sucesso' });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    return errorResponse(res, err.message, null, 400);
   }
 };
 
 export const updateAppointment = async (req, res, next) => {
   try {
-    const { id } = req.params;
-
-    const appointment = await Appointment.findOne({
-      where: { id, tenant_id: req.user.tenant_id },
-    });
+    const appointment = await appointmentService.update(req.params.id, req.body, req.user.tenant_id);
     if (!appointment) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Consulta não encontrada" });
+      return errorResponse(res, 'Consulta não encontrada', null, 404);
     }
-
-    await appointment.update(req.body);
-    res.json({ success: true, data: appointment });
+    return successResponse(res, appointment, { message: 'Consulta atualizada com sucesso' });
   } catch (error) {
     next(error);
   }
@@ -67,23 +43,11 @@ export const updateAppointment = async (req, res, next) => {
 
 export const cancelAppointment = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { reason } = req.body;
-
-    const appointment = await Appointment.findOne({
-      where: { id, tenant_id: req.user.tenant_id },
-    });
+    const appointment = await appointmentService.cancel(req.params.id, req.body.reason, req.user.tenant_id);
     if (!appointment) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Consulta não encontrada" });
+      return errorResponse(res, 'Consulta não encontrada', null, 404);
     }
-
-    await appointment.update({
-      status: "cancelled",
-      cancellation_reason: reason,
-    });
-    res.json({ success: true, data: appointment });
+    return successResponse(res, appointment, { message: 'Consulta cancelada com sucesso' });
   } catch (error) {
     next(error);
   }
@@ -91,19 +55,11 @@ export const cancelAppointment = async (req, res, next) => {
 
 export const confirmAppointment = async (req, res, next) => {
   try {
-    const { id } = req.params;
-
-    const appointment = await Appointment.findOne({
-      where: { id, tenant_id: req.user.tenant_id },
-    });
+    const appointment = await appointmentService.confirm(req.params.id, req.user.tenant_id);
     if (!appointment) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Consulta não encontrada" });
+      return errorResponse(res, 'Consulta não encontrada', null, 404);
     }
-
-    await appointment.update({ status: "confirmed" });
-    res.json({ success: true, data: appointment });
+    return successResponse(res, appointment, { message: 'Consulta confirmada com sucesso' });
   } catch (error) {
     next(error);
   }
@@ -111,19 +67,11 @@ export const confirmAppointment = async (req, res, next) => {
 
 export const completeAppointment = async (req, res, next) => {
   try {
-    const { id } = req.params;
-
-    const appointment = await Appointment.findOne({
-      where: { id, tenant_id: req.user.tenant_id },
-    });
+    const appointment = await appointmentService.complete(req.params.id, req.user.tenant_id);
     if (!appointment) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Consulta não encontrada" });
+      return errorResponse(res, 'Consulta não encontrada', null, 404);
     }
-
-    await appointment.update({ status: "completed" });
-    res.json({ success: true, data: appointment });
+    return successResponse(res, appointment, { message: 'Consulta concluída com sucesso' });
   } catch (error) {
     next(error);
   }
@@ -131,26 +79,10 @@ export const completeAppointment = async (req, res, next) => {
 
 export const listTodayAppointments = async (req, res) => {
   try {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
-
-    const appointments = await Appointment.findAll({
-      where: {
-        tenant_id: req.user.tenant_id,
-        date_time: { [Op.between]: [start, end] },
-      },
-      include: [
-        { model: Patient, as: "patient", attributes: ["id", "name"] },
-        { model: User, as: "professional", attributes: ["id", "name"] },
-      ],
-      order: [["date_time", "ASC"]],
-    });
-
-    res.json(appointments);
+    const appointments = await appointmentService.listToday(req.user.tenant_id);
+    return successResponse(res, appointments);
   } catch (err) {
-    console.error("Erro em listTodayAppointments:", err);
-    res.status(500).json({ error: "Erro ao carregar consultas de hoje" });
+    console.error('Erro em listTodayAppointments:', err);
+    return errorResponse(res, 'Erro ao carregar consultas de hoje', null, 500);
   }
 };

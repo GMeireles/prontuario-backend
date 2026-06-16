@@ -15,7 +15,10 @@ export default (sequelize, DataTypes) => {
     }
   }
 
-  PrescriptionFile.init({}, {
+  PrescriptionFile.init({
+    prescription_id: { type: DataTypes.INTEGER, allowNull: false },
+    file_id: { type: DataTypes.INTEGER, allowNull: false }
+  }, {
     sequelize,
     modelName: 'PrescriptionFile',
     tableName: 'prescription_files',

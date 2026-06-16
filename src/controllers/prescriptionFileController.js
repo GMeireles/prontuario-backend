@@ -1,23 +1,21 @@
-// controllers/prescriptionFileController.js
-import db from '../models/index.js'
+import db from '../models/index.js';
+import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
-const { Prescription, PrescriptionFile, File } = db
+const { Prescription, PrescriptionFile, File } = db;
 
 export const addFileToPrescription = async (req, res, next) => {
   try {
-    console.log('REQ BODY FILE_ID:', req.body.file_id)
-    console.log('REQ PARAMS PRESCRIPTION_ID:', req.params.prescriptionId)
     const { prescriptionId } = req.params;
     const { file_id } = req.body;
 
     const prescription = await Prescription.findByPk(prescriptionId);
     if (!prescription) {
-      return res.status(404).json({ success: false, message: 'Prescrição não encontrada' });
+      return errorResponse(res, 'Prescrição não encontrada', null, 404);
     }
 
     const file = await File.findByPk(file_id);
     if (!file) {
-      return res.status(404).json({ success: false, message: 'Arquivo não encontrado' });
+      return errorResponse(res, 'Arquivo não encontrado', null, 404);
     }
 
     const relation = await PrescriptionFile.create({
@@ -25,7 +23,7 @@ export const addFileToPrescription = async (req, res, next) => {
       file_id
     });
 
-    res.status(201).json({ success: true, data: relation });
+    return successResponse(res, relation, { status: 201, message: 'Arquivo vinculado à prescrição' });
   } catch (error) {
     next(error);
   }
@@ -38,7 +36,7 @@ export const listPrescriptionFiles = async (req, res, next) => {
       where: { prescription_id: prescriptionId },
       include: [{ model: File, as: 'file' }]
     });
-    res.json({ success: true, data: files });
+    return successResponse(res, files);
   } catch (error) {
     next(error);
   }
@@ -52,11 +50,11 @@ export const removeFileFromPrescription = async (req, res, next) => {
     });
 
     if (!relation) {
-      return res.status(404).json({ success: false, message: 'Relação não encontrada' });
+      return errorResponse(res, 'Relação não encontrada', null, 404);
     }
 
     await relation.destroy();
-    res.json({ success: true, message: 'Arquivo desvinculado da prescrição' });
+    return successResponse(res, null, { message: 'Arquivo desvinculado da prescrição' });
   } catch (error) {
     next(error);
   }

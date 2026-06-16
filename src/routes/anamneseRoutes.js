@@ -1,69 +1,79 @@
-// routes/anamneseRoutes.js
 import express from 'express';
 import {
   createAnamnese,
   listAnamneses,
   updateAnamnese,
   deleteAnamnese,
-  getAnamneseByPatient
+  getAnamneseByPatient,
+  signAnamnese
 } from '../controllers/anamneseController.js';
-import { authMiddleware } from '../middlewares/authMiddleware.js';
-import { roleMiddleware } from '../middlewares/roleMiddleware.js';
-import { tenantMiddleware } from '../middlewares/tenantMiddleware.js';
-import { validate } from '../middlewares/validate.js';
-import {
-  anamneseCreateValidation,
-  anamneseUpdateValidation
-} from '../validations/anamneseValidation.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+import { tenantContextMiddleware } from '../middleware/tenantContext.js';
+import { requireActiveSubscription } from '../middleware/requireActiveSubscription.js';
+import { requirePermission } from '../middleware/permissionMiddleware.js';
+import { validate } from '../middleware/validate.js';
+import { PERMISSIONS } from '../config/permissions.js';
+import { anamneseCreateValidation, anamneseUpdateValidation, anamneseSignValidation } from '../validators/anamneseValidation.js';
 
 const router = express.Router();
 
-// Criar anamnese para um paciente
 router.post(
   '/patient/:patientId',
   authMiddleware,
-  tenantMiddleware,
-  roleMiddleware(['professional']),
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.ANAMNESES_CREATE),
   anamneseCreateValidation,
   validate,
   createAnamnese
 );
 
-// Buscar a anamnese única de um paciente
 router.get(
   '/patient/:patientId',
   authMiddleware,
-  tenantMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.ANAMNESES_VIEW),
   getAnamneseByPatient
 );
 
-// Listar todas as anamneses de um paciente (se for manter histórico)
 router.get(
   '/all/:patientId',
   authMiddleware,
-  tenantMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.ANAMNESES_VIEW),
   listAnamneses
 );
 
-// Atualizar
 router.put(
   '/:id',
   authMiddleware,
-  tenantMiddleware,
-  roleMiddleware(['professional']),
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.ANAMNESES_UPDATE),
   anamneseUpdateValidation,
   validate,
   updateAnamnese
 );
 
-// Excluir
+router.post(
+  '/:id/sign',
+  authMiddleware,
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.SIGNATURES_CREATE),
+  anamneseSignValidation,
+  validate,
+  signAnamnese
+);
+
 router.delete(
   '/:id',
   authMiddleware,
-  tenantMiddleware,
-  roleMiddleware(['professional']),
+  tenantContextMiddleware,
+  requireActiveSubscription,
+  requirePermission(PERMISSIONS.ANAMNESES_UPDATE),
   deleteAnamnese
 );
 

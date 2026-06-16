@@ -9,6 +9,7 @@ export default (sequelize, DataTypes) => {
   }
 
   RefreshToken.init({
+    user_id: { type: DataTypes.INTEGER, allowNull: false },
     token: { type: DataTypes.STRING, allowNull: false },
     expires_at: { type: DataTypes.DATE, allowNull: false }
   }, {

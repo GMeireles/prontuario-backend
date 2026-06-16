@@ -1,13 +1,10 @@
-import db from '../models/index.js';
-
-const Tenant = db.Tenant;
+import { tenantService } from '../services/tenantService.js';
+import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export const createTenant = async (req, res, next) => {
   try {
-    const { name, cnpj, email, phone, plan } = req.body;
-
-    const tenant = await Tenant.create({ name, cnpj, email, phone, plan });
-    res.status(201).json({ success: true, data: tenant });
+    const tenant = await tenantService.create(req.body);
+    return successResponse(res, tenant, { status: 201, message: 'Tenant criado com sucesso' });
   } catch (error) {
     next(error);
   }
@@ -15,8 +12,8 @@ export const createTenant = async (req, res, next) => {
 
 export const listTenants = async (req, res, next) => {
   try {
-    const tenants = await Tenant.findAll();
-    res.json({ success: true, data: tenants });
+    const tenants = await tenantService.list();
+    return successResponse(res, tenants);
   } catch (error) {
     next(error);
   }
@@ -24,12 +21,9 @@ export const listTenants = async (req, res, next) => {
 
 export const getTenant = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const tenant = await Tenant.findByPk(id);
-
-    if (!tenant) return res.status(404).json({ success: false, message: 'Tenant não encontrado' });
-
-    res.json({ success: true, data: tenant });
+    const tenant = await tenantService.findById(req.params.id);
+    if (!tenant) return errorResponse(res, 'Tenant não encontrado', null, 404);
+    return successResponse(res, tenant);
   } catch (error) {
     next(error);
   }
@@ -37,13 +31,9 @@ export const getTenant = async (req, res, next) => {
 
 export const updateTenant = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const tenant = await Tenant.findByPk(id);
-
-    if (!tenant) return res.status(404).json({ success: false, message: 'Tenant não encontrado' });
-
-    await tenant.update(req.body);
-    res.json({ success: true, data: tenant });
+    const tenant = await tenantService.update(req.params.id, req.body);
+    if (!tenant) return errorResponse(res, 'Tenant não encontrado', null, 404);
+    return successResponse(res, tenant, { message: 'Tenant atualizado com sucesso' });
   } catch (error) {
     next(error);
   }
@@ -51,13 +41,9 @@ export const updateTenant = async (req, res, next) => {
 
 export const deleteTenant = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const tenant = await Tenant.findByPk(id);
-
-    if (!tenant) return res.status(404).json({ success: false, message: 'Tenant não encontrado' });
-
-    await tenant.destroy();
-    res.json({ success: true, message: 'Tenant removido com sucesso' });
+    const deleted = await tenantService.delete(req.params.id);
+    if (!deleted) return errorResponse(res, 'Tenant não encontrado', null, 404);
+    return successResponse(res, null, { message: 'Tenant removido com sucesso' });
   } catch (error) {
     next(error);
   }

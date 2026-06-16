@@ -6,6 +6,11 @@ export default (sequelize, DataTypes) => {
     static associate(models) {
       Patient.hasMany(models.Record, { foreignKey: 'patient_id', onDelete: 'CASCADE' });
       Patient.hasMany(models.Appointment, { foreignKey: 'patient_id', onDelete: 'CASCADE' });
+      Patient.hasMany(models.Anamnese, { foreignKey: 'patient_id', as: 'anamneses' });
+      Patient.hasMany(models.Evolution, { foreignKey: 'patient_id', as: 'evolutions' });
+      Patient.hasMany(models.Prescription, { foreignKey: 'patient_id', as: 'prescriptions' });
+      Patient.hasMany(models.File, { foreignKey: 'patient_id', as: 'files' });
+      Patient.hasMany(models.PatientAasi, { foreignKey: 'patient_id', as: 'aasis' });
     }
   }
 
@@ -20,8 +25,11 @@ export default (sequelize, DataTypes) => {
     },
     cpf: {
       type: DataTypes.STRING(11),
-      allowNull: false,
-      unique: true
+      allowNull: false
+    },
+    rg: {
+      type: DataTypes.STRING(20),
+      allowNull: true
     },
     birth_date: {
       type: DataTypes.DATEONLY,
@@ -52,12 +60,28 @@ export default (sequelize, DataTypes) => {
     },
     email: {
       type: DataTypes.STRING(100)
+    },
+    notes: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    },
+    archived_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,
     modelName: 'Patient',
     tableName: 'patients',
-    underscored: true
+    underscored: true,
+    indexes: [
+      { unique: true, fields: ['tenant_id', 'cpf'], name: 'patients_tenant_id_cpf_unique' }
+    ]
   });
 
   return Patient;

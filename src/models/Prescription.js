@@ -17,6 +17,9 @@ export default (sequelize, DataTypes) => {
   }
 
   Prescription.init({
+    patient_id: { type: DataTypes.INTEGER, allowNull: false },
+    professional_id: { type: DataTypes.INTEGER, allowNull: false },
+    tenant_id: { type: DataTypes.INTEGER, allowNull: false },
     type: { type: DataTypes.ENUM('medication', 'conduct', 'referral'), allowNull: false },
     description: { type: DataTypes.TEXT, allowNull: false },
     dosage: DataTypes.STRING,
