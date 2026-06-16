@@ -137,3 +137,16 @@ Ver [`PHASE_4_API_PERMISSIONS_REPORT.md`](PHASE_4_API_PERMISSIONS_REPORT.md).
 - `config/permissions.js` + `permissionMiddleware.js`
 - `GET /users/professionals` para agenda
 - Smoke: 13/13 PASS
+
+---
+
+## Fase 5 — SaaS / Stripe (2026-06-16)
+
+Ver [`../PHASE_5_SAAS_STRIPE_REPORT.md`](../PHASE_5_SAAS_STRIPE_REPORT.md).
+
+- Migrations: `plans`, `subscriptions`, `subscription_events`, `tenant_memberships`
+- Services: billing, stripe, subscription, planLimits, tenantAccess
+- Rotas `/api/billing/*`, `/api/webhooks/stripe`
+- Middleware `requireActiveSubscription` (402)
+- Seeder planos Free/Basic/Pro/Enterprise
+- Smoke: 13/14+ PASS
