@@ -1,29 +1,70 @@
-import express from 'express'
-import { listPatients, createPatient, updatePatient, deletePatient, listRecentPatients, getPatient } from '../controllers/patientController.js'
-import { authMiddleware } from '../middlewares/authMiddleware.js'
-import { tenantMiddleware } from '../middlewares/tenantMiddleware.js'
-import { roleMiddleware } from '../middlewares/roleMiddleware.js'
-import { validate } from '../middlewares/validate.js'
-import { patientCreateValidation, patientUpdateValidation } from '../validations/patientValidation.js'
+import express from 'express';
+import {
+  listPatients,
+  createPatient,
+  updatePatient,
+  deletePatient,
+  listRecentPatients,
+  getPatient
+} from '../controllers/patientController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+import { tenantContextMiddleware } from '../middleware/tenantContext.js';
+import { roleMiddleware } from '../middleware/roleMiddleware.js';
+import { validate } from '../middleware/validate.js';
+import { patientCreateValidation, patientUpdateValidation } from '../validators/patientValidation.js';
 
-const router = express.Router()
+const router = express.Router();
 
-// Listar pacientes (todos os roles podem ver)
-router.get('/', authMiddleware, tenantMiddleware, roleMiddleware(['admin','professional','assistant']), listPatients)
+router.get(
+  '/',
+  authMiddleware,
+  tenantContextMiddleware,
+  roleMiddleware(['admin', 'professional', 'assistant']),
+  listPatients
+);
 
-// Criar paciente (apenas admin e professional)
-router.post('/', authMiddleware, tenantMiddleware, roleMiddleware(['admin','professional']), patientCreateValidation, validate, createPatient)
+router.get(
+  '/recent',
+  authMiddleware,
+  tenantContextMiddleware,
+  roleMiddleware(['admin', 'professional', 'assistant']),
+  listRecentPatients
+);
 
-// Atualizar paciente (apenas admin e professional)
-router.put('/:id', authMiddleware, tenantMiddleware, roleMiddleware(['admin','professional']), patientUpdateValidation, validate, updatePatient)
+router.post(
+  '/',
+  authMiddleware,
+  tenantContextMiddleware,
+  roleMiddleware(['admin', 'professional']),
+  patientCreateValidation,
+  validate,
+  createPatient
+);
 
-// Remover paciente (apenas admin)
-router.delete('/:id', authMiddleware, tenantMiddleware, roleMiddleware(['admin']), deletePatient)
+router.put(
+  '/:id',
+  authMiddleware,
+  tenantContextMiddleware,
+  roleMiddleware(['admin', 'professional']),
+  patientUpdateValidation,
+  validate,
+  updatePatient
+);
 
-router.get('/recent', authMiddleware, listRecentPatients)
+router.delete(
+  '/:id',
+  authMiddleware,
+  tenantContextMiddleware,
+  roleMiddleware(['admin']),
+  deletePatient
+);
 
-// Retornar 1 paciente
-router.get('/:id', authMiddleware, tenantMiddleware, roleMiddleware(['admin','professional']), getPatient);
+router.get(
+  '/:id',
+  authMiddleware,
+  tenantContextMiddleware,
+  roleMiddleware(['admin', 'professional']),
+  getPatient
+);
 
-
-export default router
+export default router;

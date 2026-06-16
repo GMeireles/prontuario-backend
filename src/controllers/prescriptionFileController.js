@@ -5,8 +5,6 @@ const { Prescription, PrescriptionFile, File } = db
 
 export const addFileToPrescription = async (req, res, next) => {
   try {
-    console.log('REQ BODY FILE_ID:', req.body.file_id)
-    console.log('REQ PARAMS PRESCRIPTION_ID:', req.params.prescriptionId)
     const { prescriptionId } = req.params;
     const { file_id } = req.body;
 
