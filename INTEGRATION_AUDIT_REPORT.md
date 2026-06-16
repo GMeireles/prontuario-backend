@@ -179,10 +179,12 @@ cd front-end && npm run build
 
 ## Recomendação — próxima fase
 
-1. **Fase 4 Produto:** permissões granulares, pacientes avançados, prontuário/anamnese flexível
-2. **Fase SaaS:** TenantMembership, Stripe, `/auth/my-tenants`
-3. **Qualidade:** Playwright ou Cypress para fluxos críticos (login → prontuário → upload)
-4. **API v2:** respostas uniformes `{ data, meta }` com coordenação frontend
+1. **Fase 5 SaaS:** TenantMembership, Stripe, `/auth/my-tenants`
+2. **Prontuário avançado** + anamnese flexível
+3. **Qualidade:** Playwright ou Cypress para fluxos críticos
+4. Permissões em banco (se escalar além de código)
+
+> Fase 4 concluída — ver [`PHASE_4_API_PERMISSIONS_REPORT.md`](PHASE_4_API_PERMISSIONS_REPORT.md)
 
 ---
 

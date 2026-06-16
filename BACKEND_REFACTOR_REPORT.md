@@ -126,3 +126,14 @@ Ver [`INTEGRATION_AUDIT_REPORT.md`](INTEGRATION_AUDIT_REPORT.md) para detalhes c
 - Reordenação de rotas de download de arquivos
 
 **Smoke pós-auditoria:** login, refresh, me, CRUD consultas, anamnese, evolução — todos OK.
+
+---
+
+## Fase 4 — Contrato API + permissões (2026-06-16)
+
+Ver [`PHASE_4_API_PERMISSIONS_REPORT.md`](PHASE_4_API_PERMISSIONS_REPORT.md).
+
+- Contrato `{ success, data, message?, pagination?, errors? }` em todos os controllers
+- `config/permissions.js` + `permissionMiddleware.js`
+- `GET /users/professionals` para agenda
+- Smoke: 13/13 PASS
