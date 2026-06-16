@@ -11,6 +11,7 @@ export default (sequelize, DataTypes) => {
       Tenant.hasMany(models.Evolution, { foreignKey: 'tenant_id', as: 'evolutions' });
       Tenant.hasMany(models.Prescription, { foreignKey: 'tenant_id', as: 'prescriptions' });
       Tenant.hasMany(models.File, { foreignKey: 'tenant_id', as: 'files' });
+      Tenant.hasMany(models.PatientAasi, { foreignKey: 'tenant_id', as: 'patient_aasis' });
       Tenant.belongsTo(models.Plan, { foreignKey: 'plan_id', as: 'currentPlan' });
       Tenant.hasOne(models.Subscription, { foreignKey: 'tenant_id', as: 'subscription' });
       Tenant.hasMany(models.TenantMembership, { foreignKey: 'tenant_id', as: 'memberships' });

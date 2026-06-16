@@ -5,8 +5,10 @@ import {
   updatePatient,
   deletePatient,
   listRecentPatients,
-  getPatient
+  getPatient,
+  getPatientSummary
 } from '../controllers/patientController.js';
+import patientAasiRoutes from './patientAasiRoutes.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { tenantContextMiddleware } from '../middleware/tenantContext.js';
 import { requireActiveSubscription } from '../middleware/requireActiveSubscription.js';
@@ -17,40 +19,50 @@ import { patientCreateValidation, patientUpdateValidation } from '../validators/
 
 const router = express.Router();
 
+const stack = [authMiddleware, tenantContextMiddleware, requireActiveSubscription];
+
 router.get(
   '/',
-  authMiddleware,
-  tenantContextMiddleware,
-  requireActiveSubscription,
+  ...stack,
   requirePermission(PERMISSIONS.PATIENTS_VIEW),
   listPatients
 );
 
 router.get(
   '/recent',
-  authMiddleware,
-  tenantContextMiddleware,
-  requireActiveSubscription,
+  ...stack,
   requirePermission(PERMISSIONS.DASHBOARD_VIEW),
   listRecentPatients
 );
 
 router.post(
   '/',
-  authMiddleware,
-  tenantContextMiddleware,
-  requireActiveSubscription,
+  ...stack,
   requirePermission(PERMISSIONS.PATIENTS_CREATE),
   patientCreateValidation,
   validate,
   createPatient
 );
 
+router.get(
+  '/:id/summary',
+  ...stack,
+  requirePermission(PERMISSIONS.PATIENTS_VIEW),
+  getPatientSummary
+);
+
+router.use('/:patientId/aasis', patientAasiRoutes);
+
+router.get(
+  '/:id',
+  ...stack,
+  requirePermission(PERMISSIONS.PATIENTS_VIEW),
+  getPatient
+);
+
 router.put(
   '/:id',
-  authMiddleware,
-  tenantContextMiddleware,
-  requireActiveSubscription,
+  ...stack,
   requirePermission(PERMISSIONS.PATIENTS_UPDATE),
   patientUpdateValidation,
   validate,
@@ -59,20 +71,9 @@ router.put(
 
 router.delete(
   '/:id',
-  authMiddleware,
-  tenantContextMiddleware,
-  requireActiveSubscription,
+  ...stack,
   requirePermission(PERMISSIONS.PATIENTS_DELETE),
   deletePatient
-);
-
-router.get(
-  '/:id',
-  authMiddleware,
-  tenantContextMiddleware,
-  requireActiveSubscription,
-  requirePermission(PERMISSIONS.PATIENTS_VIEW),
-  getPatient
 );
 
 export default router;
