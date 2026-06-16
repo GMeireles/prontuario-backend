@@ -9,6 +9,7 @@ import {
 } from '../controllers/patientController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { tenantContextMiddleware } from '../middleware/tenantContext.js';
+import { requireActiveSubscription } from '../middleware/requireActiveSubscription.js';
 import { requirePermission } from '../middleware/permissionMiddleware.js';
 import { validate } from '../middleware/validate.js';
 import { PERMISSIONS } from '../config/permissions.js';
@@ -20,6 +21,7 @@ router.get(
   '/',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.PATIENTS_VIEW),
   listPatients
 );
@@ -28,6 +30,7 @@ router.get(
   '/recent',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.DASHBOARD_VIEW),
   listRecentPatients
 );
@@ -36,6 +39,7 @@ router.post(
   '/',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.PATIENTS_CREATE),
   patientCreateValidation,
   validate,
@@ -46,6 +50,7 @@ router.put(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.PATIENTS_UPDATE),
   patientUpdateValidation,
   validate,
@@ -56,6 +61,7 @@ router.delete(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.PATIENTS_DELETE),
   deletePatient
 );
@@ -64,6 +70,7 @@ router.get(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.PATIENTS_VIEW),
   getPatient
 );

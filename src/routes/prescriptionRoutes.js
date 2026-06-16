@@ -2,6 +2,7 @@ import express from 'express';
 import { createPrescription, listPrescriptions, updatePrescription, deletePrescription } from '../controllers/prescriptionController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { tenantContextMiddleware } from '../middleware/tenantContext.js';
+import { requireActiveSubscription } from '../middleware/requireActiveSubscription.js';
 import { requirePermission } from '../middleware/permissionMiddleware.js';
 import { validate } from '../middleware/validate.js';
 import { PERMISSIONS } from '../config/permissions.js';
@@ -13,6 +14,7 @@ router.post(
   '/',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.PRESCRIPTIONS_CREATE),
   prescriptionCreateValidation,
   validate,
@@ -23,6 +25,7 @@ router.get(
   '/:patientId',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.PRESCRIPTIONS_VIEW),
   listPrescriptions
 );
@@ -31,6 +34,7 @@ router.put(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.PRESCRIPTIONS_UPDATE),
   prescriptionUpdateValidation,
   validate,
@@ -41,6 +45,7 @@ router.delete(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.PRESCRIPTIONS_UPDATE),
   deletePrescription
 );

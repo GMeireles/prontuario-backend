@@ -2,6 +2,7 @@ import express from 'express';
 import { listRecords, createRecord, updateRecord, deleteRecord } from '../controllers/recordController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { tenantContextMiddleware } from '../middleware/tenantContext.js';
+import { requireActiveSubscription } from '../middleware/requireActiveSubscription.js';
 import { requirePermission } from '../middleware/permissionMiddleware.js';
 import { validate } from '../middleware/validate.js';
 import { PERMISSIONS } from '../config/permissions.js';
@@ -13,6 +14,7 @@ router.get(
   '/:patientId',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.EVOLUTIONS_VIEW),
   listRecords
 );
@@ -21,6 +23,7 @@ router.post(
   '/:patientId',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.EVOLUTIONS_CREATE),
   recordCreateValidation,
   validate,
@@ -31,6 +34,7 @@ router.put(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.EVOLUTIONS_UPDATE),
   recordUpdateValidation,
   validate,
@@ -41,6 +45,7 @@ router.delete(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
+  requireActiveSubscription,
   requirePermission(PERMISSIONS.EVOLUTIONS_UPDATE),
   deleteRecord
 );
