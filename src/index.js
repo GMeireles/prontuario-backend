@@ -1,54 +1,19 @@
-import express from 'express'
-import cors from 'cors'
-import dotenv from 'dotenv'
-import db from './models/index.js'
+import dotenv from 'dotenv';
+import app from './app.js';
+import db from './models/index.js';
 
-// Rotas
-import authRoutes from './routes/authRoutes.js'
-import patientRoutes from './routes/patientRoutes.js'
-import recordRoutes from './routes/recordRoutes.js'
-import appointmentRoutes from './routes/appointmentRoutes.js'
-import anamneseRoutes from './routes/anamneseRoutes.js';
-import evolutionRoutes from './routes/evolutionRoutes.js';
-import prescriptionRoutes from './routes/prescriptionRoutes.js';
-import fileRoutes from './routes/fileRoutes.js';
-import prescriptionFileRoutes from './routes/prescriptionFileRoutes.js'
-import tenantRoutes from './routes/tenantRoutes.js';
-import userRoutes from "./routes/userRoutes.js";
+dotenv.config();
 
-// Middlewares globais
-import { errorHandler } from './middlewares/errorHandler.js'
-import { notFoundHandler } from './middlewares/notFoundHandler.js'
+const PORT = process.env.PORT || 4001;
 
-dotenv.config()
+async function bootstrap() {
+  if (process.env.NODE_ENV !== 'production') {
+    await db.sequelize.sync();
+  }
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
 
-const app = express()
-app.use(cors())
-app.use(express.json())
-
-// Rotas principais
-app.use('/api/auth', authRoutes)
-app.use('/api/patients', patientRoutes)
-app.use('/api/records', recordRoutes)
-app.use('/api/appointments', appointmentRoutes)
-app.use('/api/anamneses', anamneseRoutes);
-app.use('/api/evolutions', evolutionRoutes);
-app.use('/api/prescriptions', prescriptionRoutes);
-app.use('/api/files', fileRoutes);
-app.use('/api/tenants', tenantRoutes);
-app.use("/api/users", userRoutes);
-// anexos de prescrições
-app.use('/api/prescriptions', prescriptionFileRoutes)
-
-
-// Rotas inexistentes
-app.use(notFoundHandler)
-
-// Error handler global
-app.use(errorHandler)
-
-const PORT = process.env.PORT
-
-db.sequelize.sync().then(() => {
-  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
-})
+bootstrap().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
+});
