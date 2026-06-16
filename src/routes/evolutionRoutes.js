@@ -1,11 +1,11 @@
 // routes/evolutionRoutes.js
 import express from 'express';
 import { createEvolution, listEvolutions, updateEvolution, deleteEvolution } from '../controllers/evolutionController.js';
-import { authMiddleware } from '../middlewares/authMiddleware.js';
-import { roleMiddleware } from '../middlewares/roleMiddleware.js';
-import { tenantMiddleware } from '../middlewares/tenantMiddleware.js'
-import { validate } from '../middlewares/validate.js';
-import { evolutionCreateValidation, evolutionUpdateValidation } from '../validations/evolutionValidation.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+import { roleMiddleware } from '../middleware/roleMiddleware.js';
+import { tenantContextMiddleware } from '../middleware/tenantContext.js'
+import { validate } from '../middleware/validate.js';
+import { evolutionCreateValidation, evolutionUpdateValidation } from '../validators/evolutionValidation.js';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ const router = express.Router();
 router.post(
   '/patient/:patientId',
   authMiddleware,
-  tenantMiddleware,
+  tenantContextMiddleware,
   roleMiddleware(['professional']),
   evolutionCreateValidation,
   validate,
@@ -24,7 +24,7 @@ router.post(
 router.get(
   '/patient/:patientId',
   authMiddleware,
-  tenantMiddleware,
+  tenantContextMiddleware,
   roleMiddleware(['admin', 'professional']),
   listEvolutions
 )
@@ -33,7 +33,7 @@ router.get(
 router.put(
   '/:id',
   authMiddleware,
-  tenantMiddleware,
+  tenantContextMiddleware,
   roleMiddleware(['professional']),
   evolutionUpdateValidation,
   validate,
@@ -44,7 +44,7 @@ router.put(
 router.delete(
   '/:id',
   authMiddleware,
-  tenantMiddleware,
+  tenantContextMiddleware,
   roleMiddleware(['professional']),
   deleteEvolution
 )

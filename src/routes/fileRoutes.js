@@ -1,20 +1,41 @@
-// routes/fileRoutes.js
 import express from 'express';
 import { uploadFile, listFiles, downloadFile, deleteFile } from '../controllers/fileController.js';
-import { authMiddleware } from '../middlewares/authMiddleware.js';
-import { roleMiddleware } from '../middlewares/roleMiddleware.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+import { tenantContextMiddleware } from '../middleware/tenantContext.js';
+import { roleMiddleware } from '../middleware/roleMiddleware.js';
 import { upload } from '../utils/upload.js';
 
 const router = express.Router();
 
-// upload de arquivo
-router.post('/', authMiddleware, roleMiddleware(['admin','professional']), upload.single('file'), uploadFile);
+router.post(
+  '/',
+  authMiddleware,
+  tenantContextMiddleware,
+  roleMiddleware(['admin', 'professional']),
+  upload.single('file'),
+  uploadFile
+);
 
-// listar arquivos de um paciente
-router.get('/:patientId', authMiddleware, roleMiddleware(['admin', 'professional']), listFiles);
+router.get(
+  '/:patientId',
+  authMiddleware,
+  tenantContextMiddleware,
+  roleMiddleware(['admin', 'professional']),
+  listFiles
+);
 
-router.get('/:id/download', authMiddleware, downloadFile);
+router.get(
+  '/:id/download',
+  authMiddleware,
+  tenantContextMiddleware,
+  downloadFile
+);
 
-router.delete('/:id', authMiddleware, deleteFile);
+router.delete(
+  '/:id',
+  authMiddleware,
+  tenantContextMiddleware,
+  deleteFile
+);
 
 export default router;

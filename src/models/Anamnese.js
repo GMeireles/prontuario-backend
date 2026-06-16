@@ -11,6 +11,9 @@ export default (sequelize, DataTypes) => {
   }
 
   Anamnese.init({
+    patient_id: { type: DataTypes.INTEGER, allowNull: false },
+    professional_id: { type: DataTypes.INTEGER, allowNull: false },
+    tenant_id: { type: DataTypes.INTEGER, allowNull: false },
     main_complaint: { type: DataTypes.TEXT, allowNull: false },
     medical_history: DataTypes.TEXT,
     family_history: DataTypes.TEXT,

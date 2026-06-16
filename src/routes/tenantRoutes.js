@@ -1,7 +1,7 @@
 import express from 'express';
 import { createTenant, listTenants, getTenant, updateTenant, deleteTenant } from '../controllers/tenantController.js';
-import { authMiddleware } from '../middlewares/authMiddleware.js';
-import { roleMiddleware } from '../middlewares/roleMiddleware.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+import { roleMiddleware } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
 

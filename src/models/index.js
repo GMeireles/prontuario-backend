@@ -45,6 +45,16 @@ Object.keys(db).forEach(modelName => {
   }
 });
 
+import { addTenantScope } from '../utils/sequelizeTenantPlugin.js';
+import { getTenantId } from '../utils/tenantStore.js';
+
+const tenantScopedModels = ['Patient', 'Appointment', 'Anamnese', 'Evolution', 'Prescription', 'File', 'Record'];
+tenantScopedModels.forEach((modelName) => {
+  if (db[modelName]) {
+    addTenantScope(db[modelName], getTenantId);
+  }
+});
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

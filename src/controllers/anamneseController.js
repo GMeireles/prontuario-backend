@@ -1,24 +1,13 @@
-// controllers/anamneseController.js
-import db from '../models/index.js';
-const { Anamnese, Patient, User } = db;
+import { anamneseService } from '../services/anamneseService.js';
 
 export const createAnamnese = async (req, res, next) => {
   try {
-    const { patientId } = req.params;
-    const { main_complaint, medical_history, family_history, lifestyle, allergies } = req.body;
-    const professional_id = req.user.id;
-
-    const anamnese = await Anamnese.create({
-      patient_id: patientId,
-      tenant_id: req.tenant_id,   // ✅ agora pega do middleware
-      professional_id,
-      main_complaint,
-      medical_history,
-      family_history,
-      lifestyle,
-      allergies
-    });
-
+    const anamnese = await anamneseService.create(
+      req.params.patientId,
+      req.body,
+      req.tenant_id,
+      req.user.id
+    );
     res.status(201).json({ success: true, data: anamnese });
   } catch (error) {
     next(error);
@@ -27,16 +16,7 @@ export const createAnamnese = async (req, res, next) => {
 
 export const listAnamneses = async (req, res, next) => {
   try {
-    const { patientId } = req.params;
-
-    const anamneses = await Anamnese.findAll({
-      where: { patient_id: patientId },
-      include: [
-        { model: Patient, as: 'patient' },
-        { model: User, as: 'professional', attributes: ['id', 'name', 'email'] }
-      ]
-    });
-
+    const anamneses = await anamneseService.listByPatient(req.params.patientId);
     res.json({ success: true, data: anamneses });
   } catch (error) {
     next(error);
@@ -45,15 +25,10 @@ export const listAnamneses = async (req, res, next) => {
 
 export const updateAnamnese = async (req, res, next) => {
   try {
-    const { id } = req.params;
-
-    const anamnese = await Anamnese.findByPk(id);
+    const anamnese = await anamneseService.update(req.params.id, req.body);
     if (!anamnese) {
       return res.status(404).json({ success: false, message: 'Anamnese não encontrada' });
     }
-
-    await anamnese.update(req.body);
-
     res.json({ success: true, data: anamnese });
   } catch (error) {
     next(error);
@@ -62,15 +37,10 @@ export const updateAnamnese = async (req, res, next) => {
 
 export const deleteAnamnese = async (req, res, next) => {
   try {
-    const { id } = req.params;
-
-    const anamnese = await Anamnese.findByPk(id);
-    if (!anamnese) {
+    const deleted = await anamneseService.delete(req.params.id);
+    if (!deleted) {
       return res.status(404).json({ success: false, message: 'Anamnese não encontrada' });
     }
-
-    await anamnese.destroy();
-
     res.json({ success: true, message: 'Anamnese removida com sucesso' });
   } catch (error) {
     next(error);
@@ -79,17 +49,8 @@ export const deleteAnamnese = async (req, res, next) => {
 
 export const getAnamneseByPatient = async (req, res) => {
   try {
-    const { patientId } = req.params;
-
-    const anamnese = await Anamnese.findOne({
-      where: { patient_id: patientId, tenant_id: req.user.tenant_id },
-    });
-
-    if (!anamnese) {
-      return res.json(null); // retorna vazio
-    }
-
-    res.json(anamnese);
+    const anamnese = await anamneseService.getByPatient(req.params.patientId, req.user.tenant_id);
+    res.json(anamnese || null);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -11,6 +11,9 @@ export default (sequelize, DataTypes) => {
   }
 
   File.init({
+    patient_id: { type: DataTypes.INTEGER, allowNull: false },
+    tenant_id: { type: DataTypes.INTEGER, allowNull: false },
+    uploaded_by: { type: DataTypes.INTEGER, allowNull: false },
     type: { type: DataTypes.ENUM('exam', 'image', 'document', 'other'), defaultValue: 'document' },
     filename: { type: DataTypes.STRING, allowNull: false },
     filepath: { type: DataTypes.STRING, allowNull: false },
