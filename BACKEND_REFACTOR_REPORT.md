@@ -150,3 +150,15 @@ Ver [`../PHASE_5_SAAS_STRIPE_REPORT.md`](../PHASE_5_SAAS_STRIPE_REPORT.md).
 - Middleware `requireActiveSubscription` (402)
 - Seeder planos Free/Basic/Pro/Enterprise
 - Smoke: 13/14+ PASS
+
+---
+
+## Fase 6 — Pacientes + AASI (2026-06-16)
+
+Ver [`../PHASE_6_PATIENTS_AASI_REPORT.md`](../PHASE_6_PATIENTS_AASI_REPORT.md).
+
+- Migrations patients (archive, CPF/tenant) + `patient_aasis`
+- `patientSummaryService`, `patientAasiService`
+- Rotas aninhadas `/patients/:id/aasis`, summary endpoint
+- Permissões `aasis.*` e ajuste professional (view only patients)
+- Smoke: 19/20+ PASS
