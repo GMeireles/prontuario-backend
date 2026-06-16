@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import db from '../models/index.js';
 import { signAccessToken } from '../utils/jwt.js';
+import { planLimitsService } from './planLimitsService.js';
 
 const { User, Tenant, RefreshToken } = db;
 
@@ -27,6 +28,8 @@ export const authService = {
       err.status = 404;
       throw err;
     }
+
+    await planLimitsService.assertCanCreateUser(tenant_id);
 
     const hashed = await bcrypt.hash(password, 10);
     return User.create({

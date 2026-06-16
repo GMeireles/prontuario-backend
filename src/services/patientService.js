@@ -1,4 +1,5 @@
 import db from '../models/index.js';
+import { planLimitsService } from './planLimitsService.js';
 
 const { Patient } = db;
 
@@ -30,6 +31,7 @@ export const patientService = {
   },
 
   async create(data, tenantId) {
+    await planLimitsService.assertCanCreatePatient(tenantId);
     const age = validateResponsible(data.birth_date, data.responsible_name);
     return Patient.create({
       ...data,
