@@ -11,6 +11,9 @@ export default (sequelize, DataTypes) => {
       Tenant.hasMany(models.Evolution, { foreignKey: 'tenant_id', as: 'evolutions' });
       Tenant.hasMany(models.Prescription, { foreignKey: 'tenant_id', as: 'prescriptions' });
       Tenant.hasMany(models.File, { foreignKey: 'tenant_id', as: 'files' });
+      Tenant.belongsTo(models.Plan, { foreignKey: 'plan_id', as: 'currentPlan' });
+      Tenant.hasOne(models.Subscription, { foreignKey: 'tenant_id', as: 'subscription' });
+      Tenant.hasMany(models.TenantMembership, { foreignKey: 'tenant_id', as: 'memberships' });
     }
   }
 
@@ -20,7 +23,11 @@ export default (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     phone: DataTypes.STRING,
     plan: { type: DataTypes.ENUM('free', 'basic', 'pro', 'enterprise'), defaultValue: 'basic' },
-    active: { type: DataTypes.BOOLEAN, defaultValue: true }
+    active: { type: DataTypes.BOOLEAN, defaultValue: true },
+    stripe_customer_id: DataTypes.STRING(255),
+    subscription_status: DataTypes.STRING(50),
+    plan_id: DataTypes.INTEGER,
+    billing_email: DataTypes.STRING(255)
   }, {
     sequelize,
     modelName: 'Tenant',
