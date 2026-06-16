@@ -1,23 +1,48 @@
-import express from 'express'
-import { listRecords, createRecord, updateRecord, deleteRecord } from '../controllers/recordController.js'
-import { authMiddleware } from '../middleware/authMiddleware.js'
-import { tenantContextMiddleware } from '../middleware/tenantContext.js'
-import { roleMiddleware } from '../middleware/roleMiddleware.js'
-import { validate } from '../middleware/validate.js'
-import { recordCreateValidation, recordUpdateValidation } from '../validators/recordValidation.js'
+import express from 'express';
+import { listRecords, createRecord, updateRecord, deleteRecord } from '../controllers/recordController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+import { tenantContextMiddleware } from '../middleware/tenantContext.js';
+import { requirePermission } from '../middleware/permissionMiddleware.js';
+import { validate } from '../middleware/validate.js';
+import { PERMISSIONS } from '../config/permissions.js';
+import { recordCreateValidation, recordUpdateValidation } from '../validators/recordValidation.js';
 
-const router = express.Router()
+const router = express.Router();
 
-// Histórico de registros (admin e professional podem ver)
-router.get('/:patientId', authMiddleware, tenantContextMiddleware, roleMiddleware(['admin','professional']), listRecords)
+router.get(
+  '/:patientId',
+  authMiddleware,
+  tenantContextMiddleware,
+  requirePermission(PERMISSIONS.EVOLUTIONS_VIEW),
+  listRecords
+);
 
-// Criar registro clínico (somente professional)
-router.post('/:patientId', authMiddleware, tenantContextMiddleware, roleMiddleware(['professional']), recordCreateValidation, validate, createRecord)
+router.post(
+  '/:patientId',
+  authMiddleware,
+  tenantContextMiddleware,
+  requirePermission(PERMISSIONS.EVOLUTIONS_CREATE),
+  recordCreateValidation,
+  validate,
+  createRecord
+);
 
-// Atualizar registro clínico (somente professional)
-router.put('/:id', authMiddleware, tenantContextMiddleware, roleMiddleware(['professional']), recordUpdateValidation, validate, updateRecord)
+router.put(
+  '/:id',
+  authMiddleware,
+  tenantContextMiddleware,
+  requirePermission(PERMISSIONS.EVOLUTIONS_UPDATE),
+  recordUpdateValidation,
+  validate,
+  updateRecord
+);
 
-// Remover registro clínico (somente admin)
-router.delete('/:id', authMiddleware, tenantContextMiddleware, roleMiddleware(['admin']), deleteRecord)
+router.delete(
+  '/:id',
+  authMiddleware,
+  tenantContextMiddleware,
+  requirePermission(PERMISSIONS.EVOLUTIONS_UPDATE),
+  deleteRecord
+);
 
-export default router
+export default router;

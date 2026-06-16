@@ -1,8 +1,9 @@
 import express from 'express';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { tenantContextMiddleware } from '../middleware/tenantContext.js';
-import { roleMiddleware } from '../middleware/roleMiddleware.js';
+import { requirePermission } from '../middleware/permissionMiddleware.js';
 import { validate } from '../middleware/validate.js';
+import { PERMISSIONS } from '../config/permissions.js';
 import { prescriptionFileAddValidation } from '../validators/prescriptionFileValidation.js';
 import {
   addFileToPrescription,
@@ -16,7 +17,7 @@ router.post(
   '/:prescriptionId/files',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.PRESCRIPTIONS_UPDATE),
   prescriptionFileAddValidation,
   validate,
   addFileToPrescription
@@ -26,7 +27,7 @@ router.get(
   '/:prescriptionId/files',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.PRESCRIPTIONS_VIEW),
   listPrescriptionFiles
 );
 
@@ -34,7 +35,7 @@ router.delete(
   '/:prescriptionId/files/:fileId',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.PRESCRIPTIONS_UPDATE),
   removeFileFromPrescription
 );
 

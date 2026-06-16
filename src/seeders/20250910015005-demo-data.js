@@ -25,6 +25,15 @@ export async function up(queryInterface, Sequelize) {
       created_at: new Date(),
       updated_at: new Date()
     },
+    {
+      name: 'Recepção',
+      email: 'recepcao@vexial.com.br',
+      password_hash: passwordHash,
+      role: 'assistant',
+      tenant_id: 1,
+      created_at: new Date(),
+      updated_at: new Date()
+    },
   ], {});
 }
 

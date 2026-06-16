@@ -1,53 +1,48 @@
-// routes/evolutionRoutes.js
 import express from 'express';
 import { createEvolution, listEvolutions, updateEvolution, deleteEvolution } from '../controllers/evolutionController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { roleMiddleware } from '../middleware/roleMiddleware.js';
-import { tenantContextMiddleware } from '../middleware/tenantContext.js'
+import { tenantContextMiddleware } from '../middleware/tenantContext.js';
+import { requirePermission } from '../middleware/permissionMiddleware.js';
 import { validate } from '../middleware/validate.js';
+import { PERMISSIONS } from '../config/permissions.js';
 import { evolutionCreateValidation, evolutionUpdateValidation } from '../validators/evolutionValidation.js';
 
 const router = express.Router();
 
-// Criar evolução
 router.post(
   '/patient/:patientId',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.EVOLUTIONS_CREATE),
   evolutionCreateValidation,
   validate,
   createEvolution
-)
+);
 
-// Listar evoluções
 router.get(
   '/patient/:patientId',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.EVOLUTIONS_VIEW),
   listEvolutions
-)
+);
 
-// Atualizar
 router.put(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.EVOLUTIONS_UPDATE),
   evolutionUpdateValidation,
   validate,
   updateEvolution
-)
+);
 
-// Excluir
 router.delete(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.EVOLUTIONS_UPDATE),
   deleteEvolution
-)
-
+);
 
 export default router;

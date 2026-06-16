@@ -9,8 +9,9 @@ import {
 } from '../controllers/patientController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { tenantContextMiddleware } from '../middleware/tenantContext.js';
-import { roleMiddleware } from '../middleware/roleMiddleware.js';
+import { requirePermission } from '../middleware/permissionMiddleware.js';
 import { validate } from '../middleware/validate.js';
+import { PERMISSIONS } from '../config/permissions.js';
 import { patientCreateValidation, patientUpdateValidation } from '../validators/patientValidation.js';
 
 const router = express.Router();
@@ -19,7 +20,7 @@ router.get(
   '/',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional', 'assistant']),
+  requirePermission(PERMISSIONS.PATIENTS_VIEW),
   listPatients
 );
 
@@ -27,7 +28,7 @@ router.get(
   '/recent',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional', 'assistant']),
+  requirePermission(PERMISSIONS.DASHBOARD_VIEW),
   listRecentPatients
 );
 
@@ -35,7 +36,7 @@ router.post(
   '/',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.PATIENTS_CREATE),
   patientCreateValidation,
   validate,
   createPatient
@@ -45,7 +46,7 @@ router.put(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.PATIENTS_UPDATE),
   patientUpdateValidation,
   validate,
   updatePatient
@@ -55,7 +56,7 @@ router.delete(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin']),
+  requirePermission(PERMISSIONS.PATIENTS_DELETE),
   deletePatient
 );
 
@@ -63,7 +64,7 @@ router.get(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.PATIENTS_VIEW),
   getPatient
 );
 

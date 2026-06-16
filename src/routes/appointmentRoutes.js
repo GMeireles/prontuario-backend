@@ -11,8 +11,9 @@ import {
 } from '../controllers/appointmentController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { tenantContextMiddleware } from '../middleware/tenantContext.js';
-import { roleMiddleware } from '../middleware/roleMiddleware.js';
+import { requirePermission } from '../middleware/permissionMiddleware.js';
 import { validate } from '../middleware/validate.js';
+import { PERMISSIONS } from '../config/permissions.js';
 import {
   appointmentCreateValidation,
   appointmentUpdateValidation,
@@ -25,7 +26,7 @@ router.get(
   '/today',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.DASHBOARD_VIEW),
   listTodayAppointments
 );
 
@@ -33,7 +34,7 @@ router.get(
   '/',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional', 'assistant']),
+  requirePermission(PERMISSIONS.APPOINTMENTS_VIEW),
   listAppointments
 );
 
@@ -41,7 +42,7 @@ router.post(
   '/',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional', 'assistant']),
+  requirePermission(PERMISSIONS.APPOINTMENTS_CREATE),
   appointmentCreateValidation,
   validate,
   createAppointment
@@ -51,7 +52,7 @@ router.put(
   '/:id/cancel',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.APPOINTMENTS_UPDATE),
   appointmentCancelValidation,
   validate,
   cancelAppointment
@@ -61,7 +62,7 @@ router.put(
   '/:id/confirm',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.APPOINTMENTS_UPDATE),
   confirmAppointment
 );
 
@@ -69,7 +70,7 @@ router.put(
   '/:id/complete',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.APPOINTMENTS_UPDATE),
   completeAppointment
 );
 
@@ -77,7 +78,7 @@ router.put(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional', 'assistant']),
+  requirePermission(PERMISSIONS.APPOINTMENTS_UPDATE),
   appointmentUpdateValidation,
   validate,
   updateAppointment
@@ -87,7 +88,7 @@ router.delete(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['admin', 'professional']),
+  requirePermission(PERMISSIONS.APPOINTMENTS_DELETE),
   deleteAppointment
 );
 

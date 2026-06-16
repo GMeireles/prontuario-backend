@@ -1,6 +1,7 @@
 import { verifyToken } from '../utils/jwt.js';
 import db from '../models/index.js';
-import { formatErrorResponse } from '../utils/errorHandler.js';
+import { getPermissionsForRole, getProfileLabel } from '../config/permissions.js';
+import { errorResponse } from '../utils/apiResponse.js';
 
 const { User } = db;
 
@@ -8,19 +9,19 @@ export const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      return res.status(401).json({ error: 'Token não fornecido' });
+      return errorResponse(res, 'Token não fornecido', null, 401);
     }
 
     const parts = authHeader.split(' ');
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
-      return res.status(401).json({ error: 'Formato de token inválido' });
+      return errorResponse(res, 'Formato de token inválido', null, 401);
     }
 
     const decoded = verifyToken(parts[1]);
     const user = await User.findByPk(decoded.id);
 
     if (!user) {
-      return res.status(401).json({ error: 'Usuário não encontrado' });
+      return errorResponse(res, 'Usuário não encontrado', null, 401);
     }
 
     req.user = {
@@ -28,12 +29,14 @@ export const authMiddleware = async (req, res, next) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      tenant_id: user.tenant_id
+      profile: getProfileLabel(user.role),
+      tenant_id: user.tenant_id,
+      permissions: getPermissionsForRole(user.role),
     };
     req.userId = user.id;
 
     next();
   } catch (error) {
-    return res.status(403).json(formatErrorResponse(error, 'Token inválido'));
+    return errorResponse(res, 'Token inválido', null, 403);
   }
 };
