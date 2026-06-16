@@ -1,4 +1,5 @@
 import { evolutionService } from '../services/evolutionService.js';
+import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export const createEvolution = async (req, res, next) => {
   try {
@@ -8,7 +9,7 @@ export const createEvolution = async (req, res, next) => {
       req.tenant_id,
       req.user.id
     );
-    res.status(201).json({ success: true, data: evolution });
+    return successResponse(res, evolution, { status: 201, message: 'Evolução criada com sucesso' });
   } catch (error) {
     next(error);
   }
@@ -17,7 +18,7 @@ export const createEvolution = async (req, res, next) => {
 export const listEvolutions = async (req, res, next) => {
   try {
     const evolutions = await evolutionService.listByPatient(req.params.patientId, req.tenant_id);
-    res.json({ success: true, data: evolutions });
+    return successResponse(res, evolutions);
   } catch (error) {
     next(error);
   }
@@ -27,9 +28,9 @@ export const updateEvolution = async (req, res, next) => {
   try {
     const evolution = await evolutionService.update(req.params.id, req.body, req.tenant_id);
     if (!evolution) {
-      return res.status(404).json({ success: false, message: 'Evolução não encontrada' });
+      return errorResponse(res, 'Evolução não encontrada', null, 404);
     }
-    res.json({ success: true, data: evolution });
+    return successResponse(res, evolution, { message: 'Evolução atualizada com sucesso' });
   } catch (error) {
     next(error);
   }
@@ -39,9 +40,9 @@ export const deleteEvolution = async (req, res, next) => {
   try {
     const deleted = await evolutionService.delete(req.params.id, req.tenant_id);
     if (!deleted) {
-      return res.status(404).json({ success: false, message: 'Evolução não encontrada' });
+      return errorResponse(res, 'Evolução não encontrada', null, 404);
     }
-    res.json({ success: true, message: 'Evolução removida com sucesso' });
+    return successResponse(res, null, { message: 'Evolução removida com sucesso' });
   } catch (error) {
     next(error);
   }

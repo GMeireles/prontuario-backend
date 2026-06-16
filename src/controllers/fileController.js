@@ -1,9 +1,10 @@
 import { fileService } from '../services/fileService.js';
+import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export const uploadFile = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+      return errorResponse(res, 'Nenhum arquivo enviado', null, 400);
     }
 
     const file = await fileService.createFromUpload(
@@ -12,38 +13,38 @@ export const uploadFile = async (req, res) => {
       req.user.tenant_id,
       req.user.id
     );
-    res.status(201).json(file);
+    return successResponse(res, file, { status: 201, message: 'Arquivo enviado com sucesso' });
   } catch (err) {
     console.error('Erro uploadFile:', err);
-    res.status(500).json({ error: 'Erro ao salvar arquivo', details: err.message });
+    return errorResponse(res, 'Erro ao salvar arquivo', [{ message: err.message }], 500);
   }
 };
 
 export const downloadFile = async (req, res) => {
   try {
     const file = await fileService.findById(req.params.id, req.user.tenant_id);
-    if (!file) return res.status(404).json({ error: 'Arquivo não encontrado' });
+    if (!file) return errorResponse(res, 'Arquivo não encontrado', null, 404);
     res.download(file.filepath, file.filename);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao baixar arquivo' });
+    return errorResponse(res, 'Erro ao baixar arquivo', null, 500);
   }
 };
 
 export const deleteFile = async (req, res) => {
   try {
     const deleted = await fileService.delete(req.params.id, req.user.tenant_id);
-    if (!deleted) return res.status(404).json({ error: 'Arquivo não encontrado' });
-    res.json({ success: true, message: 'Arquivo removido com sucesso' });
+    if (!deleted) return errorResponse(res, 'Arquivo não encontrado', null, 404);
+    return successResponse(res, null, { message: 'Arquivo removido com sucesso' });
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao excluir arquivo' });
+    return errorResponse(res, 'Erro ao excluir arquivo', null, 500);
   }
 };
 
 export const listFiles = async (req, res) => {
   try {
     const files = await fileService.listByPatient(req.params.patientId);
-    res.json({ success: true, data: files });
+    return successResponse(res, files);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao listar arquivos' });
+    return errorResponse(res, 'Erro ao listar arquivos', null, 500);
   }
 };

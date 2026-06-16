@@ -1,3 +1,5 @@
+import { errorResponse } from '../utils/apiResponse.js';
+
 export const notFoundHandler = (req, res) => {
-  res.status(404).json({ error: 'Rota não encontrada' });
+  errorResponse(res, 'Rota não encontrada', null, 404);
 };
