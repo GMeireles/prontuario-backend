@@ -14,7 +14,7 @@ router.post(
   '/patient/:patientId',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['professional']),
+  roleMiddleware(['admin', 'professional']),
   evolutionCreateValidation,
   validate,
   createEvolution
@@ -34,7 +34,7 @@ router.put(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['professional']),
+  roleMiddleware(['admin', 'professional']),
   evolutionUpdateValidation,
   validate,
   updateEvolution
@@ -45,7 +45,7 @@ router.delete(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['professional']),
+  roleMiddleware(['admin', 'professional']),
   deleteEvolution
 )
 

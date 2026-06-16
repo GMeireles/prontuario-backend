@@ -111,3 +111,18 @@ Credenciais demo: `guilherme.meireles@vexial.com.br` / `abcd@1234`
 
 - Plugin tenant pode conflitar com queries cross-tenant admin — usar `withoutTenantScope()`
 - Migrar `package.json` de `src/` para root completamente (hoje coexistem)
+
+---
+
+## Fase 3 — Auditoria de integração (2026-06-16)
+
+Ver [`INTEGRATION_AUDIT_REPORT.md`](INTEGRATION_AUDIT_REPORT.md) para detalhes completos.
+
+**Correções backend nesta fase:**
+- `name` em JWT e `/auth/me`
+- Admin permitido em anamnese/evolução
+- `professional_id` respeitado na criação de consultas
+- Normalização de tipos de upload para ENUM MySQL
+- Reordenação de rotas de download de arquivos
+
+**Smoke pós-auditoria:** login, refresh, me, CRUD consultas, anamnese, evolução — todos OK.

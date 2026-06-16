@@ -23,7 +23,7 @@ router.post(
   '/patient/:patientId',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['professional']),
+  roleMiddleware(['admin', 'professional']),
   anamneseCreateValidation,
   validate,
   createAnamnese
@@ -52,7 +52,7 @@ router.put(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['professional']),
+  roleMiddleware(['admin', 'professional']),
   anamneseUpdateValidation,
   validate,
   updateAnamnese
@@ -63,7 +63,7 @@ router.delete(
   '/:id',
   authMiddleware,
   tenantContextMiddleware,
-  roleMiddleware(['professional']),
+  roleMiddleware(['admin', 'professional']),
   deleteAnamnese
 );
 

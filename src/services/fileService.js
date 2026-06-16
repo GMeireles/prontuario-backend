@@ -5,6 +5,21 @@ import { Op } from 'sequelize';
 
 const { File } = db;
 
+const ALLOWED_FILE_TYPES = new Set(['exam', 'image', 'document', 'other']);
+
+function normalizeFileType(type) {
+  if (!type) return 'document';
+  if (type === 'prescription') return 'document';
+  if (ALLOWED_FILE_TYPES.has(type)) return type;
+  const map = {
+    atestado: 'document',
+    encaminhamento: 'document',
+    raiox: 'image',
+    ultrassom: 'image'
+  };
+  return map[type] || 'document';
+}
+
 export const fileService = {
   createFromUpload(file, body, tenantId, uploadedBy) {
     return File.create({
@@ -12,7 +27,7 @@ export const fileService = {
       filepath: file.path,
       mimetype: file.mimetype,
       size: file.size,
-      type: body.type || 'document',
+      type: normalizeFileType(body.type),
       patient_id: body.patient_id,
       tenant_id: tenantId,
       uploaded_by: uploadedBy

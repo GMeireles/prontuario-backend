@@ -17,18 +17,18 @@ router.post(
 );
 
 router.get(
+  '/:id/download',
+  authMiddleware,
+  tenantContextMiddleware,
+  downloadFile
+);
+
+router.get(
   '/:patientId',
   authMiddleware,
   tenantContextMiddleware,
   roleMiddleware(['admin', 'professional']),
   listFiles
-);
-
-router.get(
-  '/:id/download',
-  authMiddleware,
-  tenantContextMiddleware,
-  downloadFile
 );
 
 router.delete(

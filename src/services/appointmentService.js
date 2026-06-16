@@ -7,7 +7,10 @@ export const appointmentService = {
   list(tenantId) {
     return Appointment.findAll({
       where: { tenant_id: tenantId },
-      include: [{ model: Patient, as: 'patient' }],
+      include: [
+        { model: Patient, as: 'patient' },
+        { model: User, as: 'professional', attributes: ['id', 'name', 'email'] }
+      ],
       order: [['date_time', 'ASC']]
     });
   },
@@ -35,7 +38,7 @@ export const appointmentService = {
     return Appointment.create({
       ...data,
       tenant_id: tenantId,
-      professional_id: professionalId
+      professional_id: data.professional_id || professionalId
     });
   },
 

@@ -18,7 +18,13 @@ const ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
 
 export function signAccessToken(user) {
   return jwt.sign(
-    { id: user.id, email: user.email, role: user.role, tenant_id: user.tenant_id },
+    {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      tenant_id: user.tenant_id
+    },
     getJwtSecret(),
     { expiresIn: ACCESS_EXPIRES_IN }
   );
